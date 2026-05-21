@@ -2,8 +2,17 @@
 <html lang="pt-BR" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>BarberOS Pro - Gestão Premium</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0F1115">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BarberOS Premium">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💈</text></svg>">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="BarberOS Premium">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +21,7 @@
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com">
-    </script> 
+    </script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -55,6 +64,17 @@
         body {
             font-family: 'Poppins', sans-serif;
             letter-spacing: -0.01em;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+            overscroll-behavior: none;
+        }
+
+        input,
+        select,
+        textarea {
+            -webkit-user-select: text;
+            user-select: text;
         }
 
         ::-webkit-scrollbar {
@@ -250,15 +270,22 @@
                 box-shadow: 0 0 22px rgba(197, 160, 40, 0.9), 0 0 40px rgba(197, 160, 40, 0.3);
             }
         }
+
+        /* Safe area padding para iOS */
+        @supports(padding: env(safe-area-inset-bottom)) {
+            .safe-bottom {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans transition-colors duration-300 antialiased overflow-x-hidden">
+<body class="bg-gray-50 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans transition-colors duration-300 antialiased overflow-x-hidden safe-bottom">
 
     <!-- CONTAINER DE NOTIFICAÇÕES (TOAST) -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none" style="padding-top: env(safe-area-inset-top);"></div>
 
     <!-- ============================================== BOTÕES FLUTUANTES SOCIAIS ============================================== -->
-    <div class="fixed bottom-6 right-6 z-40 flex flex-col gap-3" id="social-float-buttons" style="display:none;">
+    <div class="fixed bottom-6 right-6 z-40 flex flex-col gap-3" id="social-float-buttons" style="display:none; padding-bottom: env(safe-area-inset-bottom);">
         <!-- WhatsApp -->
         <a href="https://wa.me/244927184916?text=Ol%C3%A1%2C%20vim%20do%20BarberOS%20Premium!" target="_blank" rel="noopener noreferrer" title="Falar no WhatsApp" class="social-float-btn whatsapp">
             <span class="pulse-ring"></span>
@@ -405,7 +432,7 @@
                         <i class="fa-solid fa-sun hidden dark:block"></i>
                     </button>
                     <div class="hidden sm:flex flex-col text-right">
-                        <span id="header-shop-name" class="text-xs font-bold text-gray-900 dark:text-white tracking-wider">BARBEARIA ELITE</span>
+                        <span id="header-shop-name" class="text-xs font-bold text-gray-900 dark:text-white tracking-wider">MINHA BARBEARIA</span>
                         <span class="text-[10px] text-gray-400" id="live-clock">Carregando hora...</span>
                     </div>
                 </div>
@@ -874,10 +901,77 @@
         </div>
     </div>
 
-    <!-- SCRIPT BLOCK (LÓGICA COMPLETA COM AUTENTICAÇÃO E DADOS) -->
+    <!-- SCRIPT BLOCK (LÓGICA COMPLETA COM AUTENTICAÇÃO E DADOS LIMPOS) -->
     <script>
         // ==========================================================================
-        // USUÁRIOS (AUTENTICAÇÃO)
+        // MANIFEST DINÂMICO PARA PWA
+        // ==========================================================================
+        (function() {
+            const manifest = {
+                name: "BarberOS Premium",
+                short_name: "BarberOS",
+                description: "Sistema de Gestão Premium para Barbearias",
+                start_url: location.href.split('?')[0],
+                display: "standalone",
+                orientation: "portrait-primary",
+                background_color: "#0F1115",
+                theme_color: "#c5a028",
+                icons: [
+                    {
+                        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%230F1115'/><text x='256' y='320' font-size='280' text-anchor='middle' fill='%23c5a028' font-family='sans-serif' font-weight='bold'>✂</text></svg>",
+                        sizes: "512x512",
+                        type: "image/svg+xml",
+                        purpose: "any maskable"
+                    },
+                    {
+                        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='38' fill='%230F1115'/><text x='96' y='130' font-size='110' text-anchor='middle' fill='%23c5a028' font-family='sans-serif' font-weight='bold'>✂</text></svg>",
+                        sizes: "192x192",
+                        type: "image/svg+xml",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+
+            const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+            const manifestURL = URL.createObjectURL(blob);
+
+            const linkEl = document.createElement('link');
+            linkEl.rel = 'manifest';
+            linkEl.href = manifestURL;
+            document.head.appendChild(linkEl);
+        })();
+
+        // ==========================================================================
+        // SERVICE WORKER REGISTRATION (OPCIONAL, MELHORA O PWA)
+        // ==========================================================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Service worker simples para caching básico
+                const swCode = `
+                    const CACHE_NAME = 'barberos-v1';
+                    const urlsToCache = ['/'];
+                    self.addEventListener('install', e => {
+                        e.waitUntil(
+                            caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+                        );
+                    });
+                    self.addEventListener('fetch', e => {
+                        e.respondWith(
+                            caches.match(e.request).then(response => response || fetch(e.request))
+                        );
+                    });
+                `;
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swURL = URL.createObjectURL(swBlob);
+
+                navigator.serviceWorker.register(swURL)
+                    .then(reg => console.log('Service Worker registrado:', reg.scope))
+                    .catch(err => console.log('Service Worker falhou:', err));
+            });
+        }
+
+        // ==========================================================================
+        // USUÁRIOS (AUTENTICAÇÃO) - Mantido admin padrão para login
         // ==========================================================================
         let BD_USERS = JSON.parse(localStorage.getItem('barber_users')) || [
             { username: 'admin', password: '123456' }
@@ -942,43 +1036,18 @@
         ];
 
         // ==========================================================================
-        // INFRAESTRUTURA DE DADOS (LOCALSTORAGE / SEED DATA)
+        // INFRAESTRUTURA DE DADOS (LOCALSTORAGE) - TODOS OS DADOS FICTÍCIOS REMOVIDOS
+        // Agora o app inicia completamente limpo, sem clientes, serviços, etc.
         // ==========================================================================
-        let BD_CLIENTES = JSON.parse(localStorage.getItem('barber_clientes')) || [
-            { id: 1, nome: "Mestre Dev", telefone: "927184916", email: "mestre@dev.com", nascimento: "1995-05-15",
-                obs: "Exigente. Corta cabelo sempre na tesoura." },
-            { id: 2, nome: "Anselmo Ralph", telefone: "912444555", email: "anselmo@music.ao", nascimento: "1988-10-20",
-                obs: "VIP, prefere a sala privada." }
-        ];
+        let BD_CLIENTES = JSON.parse(localStorage.getItem('barber_clientes')) || [];
 
-        let BD_SERVICOS = JSON.parse(localStorage.getItem('barber_servicos')) || [
-            { id: 1, nome: "Corte Degradê", preco: 3500, tempo: 40 },
-            { id: 2, nome: "Barboterapia Premium", preco: 2500, tempo: 30 },
-            { id: 3, nome: "Combo Barber Imperial", preco: 5500, tempo: 70 }
-        ];
+        let BD_SERVICOS = JSON.parse(localStorage.getItem('barber_servicos')) || [];
 
-        let BD_BARBEIROS = JSON.parse(localStorage.getItem('barber_barbeiros')) || [
-            { id: 1, nome: "Valdir Navalha", especialidade: "Visagismo & Degradê", telefone: "931000222",
-            comissao: 40 },
-            { id: 2, nome: "Preto Show Barber", especialidade: "Pigmentação e Barba", telefone: "945999888",
-            comissao: 50 }
-        ];
+        let BD_BARBEIROS = JSON.parse(localStorage.getItem('barber_barbeiros')) || [];
 
-        let BD_AGENDAMENTOS = JSON.parse(localStorage.getItem('barber_agendamentos')) || [
-            { id: 1, clienteId: 1, servicoId: 1, barbeiroId: 1, data: new Date().toISOString().split('T')[0], hora: "14:30",
-                status: "Agendado" },
-            { id: 2, clienteId: 2, servicoId: 3, barbeiroId: 2, data: new Date().toISOString().split('T')[0], hora: "16:00",
-                status: "Finalizado" }
-        ];
+        let BD_AGENDAMENTOS = JSON.parse(localStorage.getItem('barber_agendamentos')) || [];
 
-        let BD_FINANCEIRO = JSON.parse(localStorage.getItem('barber_financeiro')) || [
-            { id: 1, descricao: "Combo Barber Imperial - Anselmo", categoria: "Serviços", tipo: "Entrada", valor: 5500,
-                data: new Date().toISOString().split('T')[0] },
-            { id: 2, descricao: "Comissão Preto Show Barber", categoria: "Salários", tipo: "Saída", valor: 2750,
-                data: new Date().toISOString().split('T')[0] },
-            { id: 3, descricao: "Internet Fibra Zap", categoria: "Internet", tipo: "Saída", valor: 15000,
-                data: new Date().toISOString().split('T')[0] }
-        ];
+        let BD_FINANCEIRO = JSON.parse(localStorage.getItem('barber_financeiro')) || [];
 
         let BD_CAIXA = JSON.parse(localStorage.getItem('barber_caixa')) || {
             status: "Fechado",
@@ -987,9 +1056,9 @@
         };
 
         let BD_CONFIG = JSON.parse(localStorage.getItem('barber_config')) || {
-            name: "BARBEARIA ELITE BENGUELA",
-            phone: "927 184 916",
-            address: "Av. Lourenço Macanga, Zona Comercial"
+            name: "MINHA BARBEARIA",
+            phone: "",
+            address: ""
         };
 
         let financeChartInstance = null;
@@ -1091,18 +1160,24 @@
         function initClock() {
             const updateClock = () => {
                 const now = new Date();
-                document.getElementById('live-clock').innerText = now.toLocaleDateString('pt-BR') + ' | ' + now
-                    .toLocaleTimeString('pt-BR');
+                const clockEl = document.getElementById('live-clock');
+                if (clockEl) {
+                    clockEl.innerText = now.toLocaleDateString('pt-BR') + ' | ' + now.toLocaleTimeString('pt-BR');
+                }
             };
             updateClock();
             setInterval(updateClock, 1000);
         }
 
         function applyConfigDOM() {
-            document.getElementById('header-shop-name').innerText = BD_CONFIG.name;
-            document.getElementById('cfg-shop-name').value = BD_CONFIG.name;
-            document.getElementById('cfg-shop-phone').value = BD_CONFIG.phone;
-            document.getElementById('cfg-shop-address').value = BD_CONFIG.address;
+            const headerShop = document.getElementById('header-shop-name');
+            if (headerShop) headerShop.innerText = BD_CONFIG.name || "MINHA BARBEARIA";
+            const cfgName = document.getElementById('cfg-shop-name');
+            if (cfgName) cfgName.value = BD_CONFIG.name || "";
+            const cfgPhone = document.getElementById('cfg-shop-phone');
+            if (cfgPhone) cfgPhone.value = BD_CONFIG.phone || "";
+            const cfgAddr = document.getElementById('cfg-shop-address');
+            if (cfgAddr) cfgAddr.value = BD_CONFIG.address || "";
         }
 
         // ==========================================================================
@@ -1116,7 +1191,7 @@
             // Duplicar para efeito infinito
             const anunciosDuplicados = [...BD_ANUNCIOS, ...BD_ANUNCIOS];
 
-            anunciosDuplicados.forEach((anuncio, index) => {
+            anunciosDuplicados.forEach((anuncio) => {
                 cardsHTML += `
                     <div class="anuncio-card bg-white dark:bg-darkbg border border-gray-100 dark:border-darkborder shadow-md flex-shrink-0 cursor-pointer" onclick="window.open('${anuncio.link}', '_blank', 'noopener,noreferrer')" title="${anuncio.titulo}">
                         <div class="relative h-36 overflow-hidden">
@@ -1151,24 +1226,31 @@
             const activeNav = document.querySelector(`.nav-item[data-view="${viewName}"]`);
             if (activeNav) activeNav.classList.add('active');
 
-            document.getElementById('view-title').innerText = viewName.charAt(0).toUpperCase() + viewName.slice(1);
-            document.getElementById('sidebar').classList.add('-translate-x-full');
+            const viewTitle = document.getElementById('view-title');
+            if (viewTitle) viewTitle.innerText = viewName.charAt(0).toUpperCase() + viewName.slice(1);
+
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) sidebar.classList.add('-translate-x-full');
 
             renderActiveView();
         }
 
         function renderActiveView() {
-            const currentView = document.querySelector('.nav-item.active').getAttribute('data-view');
+            const activeNav = document.querySelector('.nav-item.active');
+            if (!activeNav) return;
+            const currentView = activeNav.getAttribute('data-view');
 
             const statusCaixaBadge = document.getElementById('sidebar-status-caixa');
-            if (BD_CAIXA.status === 'Aberto') {
-                statusCaixaBadge.innerText = "Aberto";
-                statusCaixaBadge.className =
-                    "text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-medium";
-            } else {
-                statusCaixaBadge.innerText = "Fechado";
-                statusCaixaBadge.className =
-                    "text-[10px] bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded-full font-medium";
+            if (statusCaixaBadge) {
+                if (BD_CAIXA.status === 'Aberto') {
+                    statusCaixaBadge.innerText = "Aberto";
+                    statusCaixaBadge.className =
+                        "text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-medium";
+                } else {
+                    statusCaixaBadge.innerText = "Fechado";
+                    statusCaixaBadge.className =
+                        "text-[10px] bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded-full font-medium";
+                }
             }
 
             switch (currentView) {
@@ -1192,6 +1274,8 @@
                     break;
                 case 'barbeiros':
                     renderBarbeiros();
+                    break;
+                default:
                     break;
             }
         }
@@ -1240,7 +1324,8 @@
                         <td class="py-2.5 text-right"><button onclick="verDossieCliente(${c.id})" class="text-gold-500 hover:underline text-[11px]">Dossiê</button></td>
                     </tr>`;
             });
-            document.getElementById('dash-ultimos-clientes').innerHTML = ultimosCliHTML;
+            document.getElementById('dash-ultimos-clientes').innerHTML = ultimosCliHTML ||
+                '<tr><td colspan="3" class="py-4 text-center text-gray-500">Nenhum cliente cadastrado ainda.</td></tr>';
 
             let ultimosFinHTML = '';
             BD_FINANCEIRO.slice(-4).reverse().forEach(f => {
@@ -1251,7 +1336,8 @@
                         <td class="py-2.5 text-right font-semibold ${f.tipo === 'Entrada' ? 'text-emerald-400' : 'text-rose-400'}">Kz ${f.valor.toLocaleString()}</td>
                     </tr>`;
             });
-            document.getElementById('dash-ultimos-pagamentos').innerHTML = ultimosFinHTML;
+            document.getElementById('dash-ultimos-pagamentos').innerHTML = ultimosFinHTML ||
+                '<tr><td colspan="3" class="py-4 text-center text-gray-500">Nenhum fluxo financeiro registrado.</td></tr>';
 
             renderFinanceChart(totalEntradas, totalSaidas);
             // Re-render anúncios ao carregar dashboard
@@ -1259,7 +1345,9 @@
         }
 
         function renderFinanceChart(entradas, saidas) {
-            const ctx = document.getElementById('chart-financeiro').getContext('2d');
+            const canvas = document.getElementById('chart-financeiro');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             if (financeChartInstance) financeChartInstance.destroy();
             financeChartInstance = new Chart(ctx, {
                 type: 'bar',
@@ -1278,17 +1366,23 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af',
-                            font: { size: 10 } } },
-                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } }
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#9ca3af', font: { size: 10 } },
+                            beginAtZero: true
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9ca3af', font: { size: 11 } }
+                        }
                     }
                 }
             });
         }
 
         function renderAgendamentos() {
-            const searchVal = document.getElementById('agendamento-search').value.toLowerCase();
-            const filterStatus = document.getElementById('agendamento-filtro-status').value;
+            const searchVal = (document.getElementById('agendamento-search')?.value || '').toLowerCase();
+            const filterStatus = document.getElementById('agendamento-filtro-status')?.value || '';
 
             let html = '';
             const filtrados = BD_AGENDAMENTOS.filter(a => {
@@ -1322,21 +1416,23 @@
                     </tr>`;
             });
             document.getElementById('lista-agendamentos').innerHTML = html ||
-                '<tr><td colspan="6" class="p-8 text-center text-gray-500">Nenhum registro.</td></tr>';
+                '<tr><td colspan="6" class="p-8 text-center text-gray-500">Nenhum agendamento registrado. Cadastre o primeiro!</td></tr>';
         }
 
         function renderClientes() {
-            const searchVal = document.getElementById('cliente-search').value.toLowerCase();
+            const searchVal = (document.getElementById('cliente-search')?.value || '').toLowerCase();
             let html = '';
-            const filtrados = BD_CLIENTES.filter(c => c.nome.toLowerCase().includes(searchVal) || c.telefone.includes(
-                searchVal));
+            const filtrados = BD_CLIENTES.filter(c =>
+                c.nome.toLowerCase().includes(searchVal) ||
+                (c.telefone || '').includes(searchVal)
+            );
 
             filtrados.forEach(c => {
                 html += `
                     <div class="bg-white dark:bg-darkcard p-5 rounded-2xl border border-gray-100 dark:border-darkborder flex flex-col justify-between shadow-sm">
                         <div class="space-y-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-500 to-amber-600 text-black flex items-center justify-center font-bold text-sm">${c.nome.charAt(0)}</div>
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-500 to-amber-600 text-black flex items-center justify-center font-bold text-sm">${c.nome.charAt(0).toUpperCase()}</div>
                                 <div class="min-w-0">
                                     <h4 class="font-semibold text-xs truncate">${c.nome}</h4>
                                     <p class="text-[10px] text-gray-400 truncate">${c.email || 'Sem e-mail'}</p>
@@ -1356,7 +1452,8 @@
                         </div>
                     </div>`;
             });
-            document.getElementById('grid-clientes').innerHTML = html || '<p class="text-xs text-gray-500 p-4">Nenhum cliente.</p>';
+            document.getElementById('grid-clientes').innerHTML = html ||
+                '<p class="text-xs text-gray-500 p-4 col-span-full text-center">Nenhum cliente cadastrado. Comece agora!</p>';
         }
 
         function renderServicos() {
@@ -1377,11 +1474,12 @@
                         </div>
                     </div>`;
             });
-            document.getElementById('grid-servicos').innerHTML = html || '<p class="text-xs text-gray-500">Nenhum serviço.</p>';
+            document.getElementById('grid-servicos').innerHTML = html ||
+                '<p class="text-xs text-gray-500 p-4 col-span-full text-center">Nenhum serviço no cardápio. Adicione o primeiro!</p>';
         }
 
         function renderFinanceiro() {
-            const filterTipo = document.getElementById('fin-filtro-tipo').value;
+            const filterTipo = document.getElementById('fin-filtro-tipo')?.value || '';
             let html = '';
             const filtrados = BD_FINANCEIRO.filter(f => filterTipo ? f.tipo === filterTipo : true);
 
@@ -1404,7 +1502,7 @@
                     </tr>`;
             });
             document.getElementById('lista-financeiro').innerHTML = html ||
-                '<tr><td colspan="6" class="p-4 text-center text-gray-500">Sem fluxos.</td></tr>';
+                '<tr><td colspan="6" class="p-4 text-center text-gray-500">Nenhum lançamento financeiro. Registre entradas e saídas!</td></tr>';
         }
 
         function renderCaixaView() {
@@ -1491,7 +1589,7 @@
                     </div>`;
             });
             document.getElementById('grid-barbeiros').innerHTML = html ||
-                '<p class="text-xs text-gray-500">Nenhum profissional.</p>';
+                '<p class="text-xs text-gray-500 p-4 col-span-full text-center">Nenhum barbeiro cadastrado. Contrate sua equipe!</p>';
         }
 
         // ==========================================================================
@@ -1499,12 +1597,14 @@
         // ==========================================================================
         function abrirCaixaOperação() {
             const valorAbertura = parseFloat(prompt("Fundo operacional de maneio inicial (Kz):", "5000"));
-            if (!isNaN(valorAbertura)) {
+            if (!isNaN(valorAbertura) && valorAbertura >= 0) {
                 BD_CAIXA.status = "Aberto";
                 BD_CAIXA.aberturaValor = valorAbertura;
                 BD_CAIXA.dataAbertura = new Date().toISOString();
                 showToast("Caixa aberto com sucesso!", "success");
                 sync();
+            } else if (!isNaN(valorAbertura)) {
+                showToast("Valor inválido para abertura do caixa.", "error");
             }
         }
 
@@ -1584,7 +1684,7 @@
                     </div>`;
             });
             document.getElementById('hist-cortes-lista').innerHTML = cortesHTML ||
-                '<p class="text-gray-500 text-center text-[11px]">Nenhum histórico.</p>';
+                '<p class="text-gray-500 text-center text-[11px]">Nenhum histórico de cortes.</p>';
 
             const fluxos = BD_FINANCEIRO.filter(f => f.descricao.includes(cli.nome));
             let fluxosHTML = '';
@@ -1596,7 +1696,7 @@
                     </div>`;
             });
             document.getElementById('hist-financeiro-lista').innerHTML = fluxosHTML ||
-                '<p class="text-gray-500 text-center text-[11px]">Nenhum fluxo direto.</p>';
+                '<p class="text-gray-500 text-center text-[11px]">Nenhum fluxo direto encontrado.</p>';
 
             openModal('modal-historico');
         }
@@ -1611,7 +1711,7 @@
             if (!confirmacao1) return;
 
             const confirmacao2 = confirm(
-                "🚨 ÚLTIMA CONFIRMAÇÃO!\n\nDigite 'APAGAR' na caixa abaixo para confirmar a exclusão total dos dados."
+                "🚨 ÚLTIMA CONFIRMAÇÃO!\n\nEsta ação não pode ser desfeita."
                 );
             if (!confirmacao2) return;
 
@@ -1642,9 +1742,15 @@
         // ==========================================================================
         // DIALOGS & UTILS
         // ==========================================================================
-        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('active');
+        }
 
-        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('active');
+        }
 
         function populateAgendamentoDropdowns() {
             let cliOpt = '';
@@ -1655,13 +1761,18 @@
             let barOpt = '';
             BD_BARBEIROS.forEach(b => barOpt += `<option value="${b.id}">${b.nome}</option>`);
 
-            document.getElementById('agenda-cliente').innerHTML = cliOpt;
-            document.getElementById('agenda-servico').innerHTML = srvOpt;
-            document.getElementById('agenda-barbeiro').innerHTML = barOpt;
+            const agendaCli = document.getElementById('agenda-cliente');
+            const agendaSrv = document.getElementById('agenda-servico');
+            const agendaBar = document.getElementById('agenda-barbeiro');
+
+            if (agendaCli) agendaCli.innerHTML = cliOpt || '<option value="">-- Cadastre um cliente primeiro --</option>';
+            if (agendaSrv) agendaSrv.innerHTML = srvOpt || '<option value="">-- Cadastre um serviço primeiro --</option>';
+            if (agendaBar) agendaBar.innerHTML = barOpt || '<option value="">-- Cadastre um barbeiro primeiro --</option>';
         }
 
         function showToast(message, type = "success") {
             const container = document.getElementById('toast-container');
+            if (!container) return;
             const toast = document.createElement('div');
             let icon = '<i class="fa-solid fa-circle-check"></i>';
             let color = 'bg-emerald-500 border-emerald-600 text-white';
@@ -1688,18 +1799,20 @@
             const btnSaida = document.getElementById('fin-btn-saida');
             const selectCat = document.getElementById('fin-categoria');
 
+            if (!btnEntrada || !btnSaida || !selectCat) return;
+
             if (type === 'Entrada') {
                 btnEntrada.className =
                     "py-2 rounded-xl font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/50";
                 btnSaida.className =
-                    "py-2 rounded-xl font-bold bg-transparent text-gray-400 border border-darkborder";
+                    "py-2 rounded-xl font-bold bg-transparent text-gray-400 border border-gray-200 dark:border-darkborder";
                 selectCat.innerHTML =
                     '<option value="Serviços">Serviços</option><option value="Produtos">Venda de Produtos</option><option value="Outros">Outros Ganhos</option>';
             } else {
                 btnSaida.className =
                     "py-2 rounded-xl font-bold bg-rose-500/20 text-rose-400 border border-rose-500/50";
                 btnEntrada.className =
-                    "py-2 rounded-xl font-bold bg-transparent text-gray-400 border border-darkborder";
+                    "py-2 rounded-xl font-bold bg-transparent text-gray-400 border border-gray-200 dark:border-darkborder";
                 selectCat.innerHTML =
                     '<option value="Água">Água</option><option value="Energia">Energia</option><option value="Internet">Internet</option><option value="Materiais">Materiais</option><option value="Salários">Salários</option><option value="Outros">Outros Gastos</option>';
             }
@@ -1709,29 +1822,38 @@
         // HANDLERS DE EXCLUSÃO / EDIÇÃO
         // ==========================================================================
         function deletarAgendamento(id) {
-            if (confirm("Remover este agendamento?")) { BD_AGENDAMENTOS = BD_AGENDAMENTOS.filter(item => item.id != id);
-                sync(); }
+            if (confirm("Remover este agendamento?")) {
+                BD_AGENDAMENTOS = BD_AGENDAMENTOS.filter(item => item.id != id);
+                sync();
+            }
         }
 
         function deletarCliente(id) {
-            if (confirm("Remover este cliente permanentemente?")) { BD_CLIENTES = BD_CLIENTES.filter(item => item.id != id);
-                sync(); }
+            if (confirm("Remover este cliente permanentemente?")) {
+                BD_CLIENTES = BD_CLIENTES.filter(item => item.id != id);
+                sync();
+            }
         }
 
         function deletarServico(id) {
-            if (confirm("Excluir serviço do menu?")) { BD_SERVICOS = BD_SERVICOS.filter(item => item.id != id);
-                sync(); }
+            if (confirm("Excluir serviço do menu?")) {
+                BD_SERVICOS = BD_SERVICOS.filter(item => item.id != id);
+                sync();
+            }
         }
 
         function deletarFinanceiro(id) {
-            if (confirm("Excluir lançamento contábil?")) { BD_FINANCEIRO = BD_FINANCEIRO.filter(item => item.id != id);
-                sync(); }
+            if (confirm("Excluir lançamento contábil?")) {
+                BD_FINANCEIRO = BD_FINANCEIRO.filter(item => item.id != id);
+                sync();
+            }
         }
 
         function demitirBarbeiro(id) {
-            if (confirm("Remover barbeiro do quadro de funcionários?")) { BD_BARBEIROS = BD_BARBEIROS.filter(item => item
-                    .id != id);
-                sync(); }
+            if (confirm("Remover barbeiro do quadro de funcionários?")) {
+                BD_BARBEIROS = BD_BARBEIROS.filter(item => item.id != id);
+                sync();
+            }
         }
 
         function editarClienteModal(id) {
@@ -1827,10 +1949,12 @@
                 });
             });
 
-            document.getElementById('open-sidebar').addEventListener('click', () => document.getElementById(
-                'sidebar').classList.remove('-translate-x-full'));
-            document.getElementById('close-sidebar').addEventListener('click', () => document.getElementById('sidebar')
-                .classList.add('-translate-x-full'));
+            document.getElementById('open-sidebar').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('-translate-x-full');
+            });
+            document.getElementById('close-sidebar').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+            });
 
             document.getElementById('dark-mode-toggle').addEventListener('click', () => {
                 document.documentElement.classList.toggle('dark');
@@ -1838,10 +1962,16 @@
             });
 
             // --- Botão Instalar App ---
-            document.getElementById('btn-install-app').addEventListener('click', triggerInstall);
+            const installBtn = document.getElementById('btn-install-app');
+            if (installBtn) {
+                installBtn.addEventListener('click', triggerInstall);
+            }
 
             // --- Botão Apagar Todos os Dados ---
-            document.getElementById('btn-apagar-dados').addEventListener('click', apagarTodosOsDados);
+            const apagarBtn = document.getElementById('btn-apagar-dados');
+            if (apagarBtn) {
+                apagarBtn.addEventListener('click', apagarTodosOsDados);
+            }
 
             // --- Formulários de CRUD ---
             document.getElementById('form-cliente').addEventListener('submit', (e) => {
@@ -1875,11 +2005,20 @@
 
             document.getElementById('form-agendamento').addEventListener('submit', (e) => {
                 e.preventDefault();
+                const clienteVal = document.getElementById('agenda-cliente').value;
+                const servicoVal = document.getElementById('agenda-servico').value;
+                const barbeiroVal = document.getElementById('agenda-barbeiro').value;
+
+                if (!clienteVal || !servicoVal || !barbeiroVal) {
+                    showToast("Preencha todos os campos obrigatórios!", "error");
+                    return;
+                }
+
                 BD_AGENDAMENTOS.push({
                     id: Date.now(),
-                    clienteId: parseInt(document.getElementById('agenda-cliente').value),
-                    servicoId: parseInt(document.getElementById('agenda-servico').value),
-                    barbeiroId: parseInt(document.getElementById('agenda-barbeiro').value),
+                    clienteId: parseInt(clienteVal),
+                    servicoId: parseInt(servicoVal),
+                    barbeiroId: parseInt(barbeiroVal),
                     data: document.getElementById('agenda-data').value,
                     hora: document.getElementById('agenda-hora').value,
                     status: document.getElementById('agenda-status').value
@@ -1921,8 +2060,9 @@
 
             document.getElementById('form-financeiro').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const tipoAtivo = document.getElementById('fin-btn-entrada').classList.contains(
-                    'bg-emerald-500/20') ? 'Entrada' : 'Saída';
+                const btnEntrada = document.getElementById('fin-btn-entrada');
+                const tipoAtivo = btnEntrada && btnEntrada.classList.contains('bg-emerald-500/20') ?
+                    'Entrada' : 'Saída';
                 BD_FINANCEIRO.push({
                     id: Date.now(),
                     descricao: document.getElementById('fin-descricao').value,
@@ -1938,15 +2078,21 @@
             });
 
             // --- Tipo financeiro ---
-            document.getElementById('fin-btn-entrada').addEventListener('click', () => toggleFinTypeModal('Entrada'));
-            document.getElementById('fin-btn-saida').addEventListener('click', () => toggleFinTypeModal('Saída'));
+            const finEntrada = document.getElementById('fin-btn-entrada');
+            const finSaida = document.getElementById('fin-btn-saida');
+            if (finEntrada) finEntrada.addEventListener('click', () => toggleFinTypeModal('Entrada'));
+            if (finSaida) finSaida.addEventListener('click', () => toggleFinTypeModal('Saída'));
             toggleFinTypeModal('Entrada');
 
             // --- Filtros e buscas ---
-            document.getElementById('agendamento-search').addEventListener('input', renderAgendamentos);
-            document.getElementById('agendamento-filtro-status').addEventListener('change', renderAgendamentos);
-            document.getElementById('cliente-search').addEventListener('input', renderClientes);
-            document.getElementById('fin-filtro-tipo').addEventListener('change', renderFinanceiro);
+            const agendaSearch = document.getElementById('agendamento-search');
+            if (agendaSearch) agendaSearch.addEventListener('input', renderAgendamentos);
+            const agendaFiltro = document.getElementById('agendamento-filtro-status');
+            if (agendaFiltro) agendaFiltro.addEventListener('change', renderAgendamentos);
+            const clienteSearch = document.getElementById('cliente-search');
+            if (clienteSearch) clienteSearch.addEventListener('input', renderClientes);
+            const finFiltro = document.getElementById('fin-filtro-tipo');
+            if (finFiltro) finFiltro.addEventListener('change', renderFinanceiro);
 
             // --- Configurações ---
             document.getElementById('form-configuracoes').addEventListener('submit', (e) => {
@@ -1958,15 +2104,7 @@
                 applyConfigDOM();
                 sync();
             });
-
-            // Preencher data atual ao abrir modal financeiro
-            const btnFinanceiroModal = document.querySelector('[onclick*="modal-financeiro"]');
-            if (btnFinanceiroModal) {
-                btnFinanceiroModal.addEventListener('click', () => {
-                    document.getElementById('fin-data').value = new Date().toISOString().split('T')[0];
-                });
-            }
         }
     </script>
 </body>
-</html>
+    </html>
