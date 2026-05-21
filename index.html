@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarberOS Pro - Gestão Premium</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            50: '#fbf8eb',
+                            100: '#f4eca1',
+                            200: '#eddfa3',
+                            300: '#e3cc74',
+                            400: '#d9b648',
+                            500: '#c5a028',
+                            600: '#a6821e',
+                            700: '#856418',
+                            800: '#644913',
+                            900: '#42300c'
+                        },
+                        darkbg: '#0F1115',
+                        darkcard: '#161920',
+                        darkborder: '#242936'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+
+    <!-- STYLE BLOCK (CSS OTIMIZADO) -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0F1115;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #242936;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c5a028;
+        }
+
+        .nav-item {
+            color: #9ca3af;
+        }
+        .nav-item:hover {
+            background-color: rgba(197, 160, 40, 0.05);
+            color: #c5a028;
+        }
+        .nav-item.active {
+            background-color: #c5a028;
+            color: #000000 !important;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(197, 160, 40, 0.2);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-overlay.active>div {
+            transform: scale(1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* ANIMAÇÃO DO CARROSSEL DE ANÚNCIOS (SLIDE INFINITO) */
+        @keyframes infiniteScroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        .anuncios-track {
+            display: flex;
+            width: max-content;
+            animation: infiniteScroll 35s linear infinite;
+            gap: 1rem;
+        }
+        .anuncios-track:hover {
+            animation-play-state: paused;
+        }
+        .anuncio-card {
+            flex: 0 0 auto;
+            width: 280px;
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(197, 160, 40, 0.2);
+        }
+        .anuncio-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(197, 160, 40, 0.25);
+            border-color: #c5a028;
+        }
+        .anuncio-card .cta-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #c5a028;
+            color: #000;
+            font-weight: 700;
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            letter-spacing: 0.5px;
+            animation: pulseBadge 2s ease-in-out infinite;
+        }
+        @keyframes pulseBadge {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 0 20px rgba(197, 160, 40, 0.6);
+            }
+        }
+
+        /* BOTÕES FLUTUANTES SOCIAIS */
+        .social-float-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        .social-float-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+        }
+        .social-float-btn.whatsapp {
+            background: #25D366;
+            color: #fff;
+        }
+        .social-float-btn.whatsapp:hover {
+            box-shadow: 0 12px 28px rgba(37, 211, 102, 0.5);
+        }
+        .social-float-btn.facebook {
+            background: #1877F2;
+            color: #fff;
+        }
+        .social-float-btn.facebook:hover {
+            box-shadow: 0 12px 28px rgba(24, 119, 242, 0.5);
+        }
+        .social-float-btn .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            animation: ringPulse 2s ease-out infinite;
+            opacity: 0;
+        }
+        @keyframes ringPulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        /* CRÉDITO DO DESENVOLVEDOR */
+        .dev-credit {
+            font-size: 9px;
+            letter-spacing: 0.8px;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        .dev-credit:hover {
+            opacity: 1;
+        }
+
+        input,
+        select,
+        textarea {
+            color-scheme: dark;
+        }
+        html:not(.dark) input,
+        html:not(.dark) select,
+        html:not(.dark) textarea {
+            color-scheme: light;
+        }
+
+        /* Estilo para botão de instalar */
+        .install-btn-glow {
+            animation: glowPulse 2.5s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(197, 160, 40, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 22px rgba(197, 160, 40, 0.9), 0 0 40px rgba(197, 160, 40, 0.3);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans transition-colors duration-300 antialiased overflow-x-hidden">
+
+    <!-- CONTAINER DE NOTIFICAÇÕES (TOAST) -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- ============================================== BOTÕES FLUTUANTES SOCIAIS ============================================== -->
+    <div class="fixed bottom-6 right-6 z-40 flex flex-col gap-3" id="social-float-buttons" style="display:none;">
+        <!-- WhatsApp -->
+        <a href="https://wa.me/244927184916?text=Ol%C3%A1%2C%20vim%20do%20BarberOS%20Premium!" target="_blank" rel="noopener noreferrer" title="Falar no WhatsApp" class="social-float-btn whatsapp">
+            <span class="pulse-ring"></span>
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <!-- Facebook -->
+        <a href="https://www.facebook.com/domingos.sampanhe01" target="_blank" rel="noopener noreferrer" title="Seguir no Facebook" class="social-float-btn facebook">
+            <span class="pulse-ring"></span>
+            <i class="fa-brands fa-facebook-f"></i>
+        </a>
+    </div>
+
+    <!-- TELA DE LOGIN (com alternância entre login e cadastro) -->
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-cover bg-center transition-all duration-500" style="background-image: linear-gradient(rgba(15, 17, 21, 0.88), rgba(15, 17, 21, 0.95)), url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200');">
+        <!-- Formulário de LOGIN -->
+        <div id="login-form-container" class="bg-white dark:bg-darkcard p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-darkborder backdrop-blur-sm animate-fade-in mx-4">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gold-500 text-black mb-4 shadow-lg shadow-gold-500/20">
+                    <i class="fa-solid fa-scissors text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-wider text-gray-900 dark:text-white">BARBER<span class="text-gold-500">OS</span> PREMIUM</h1>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Management & Lifestyle Client Experience</p>
+                <!-- Crédito do desenvolvedor na tela de login -->
+                <p class="dev-credit text-gray-500 dark:text-gray-500 mt-2 uppercase tracking-widest">Desenvolvido por <span class="text-gold-500 font-semibold">Domingos Sampanhe</span></p>
+            </div>
+
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2">Usuário</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fa-regular fa-user"></i></span>
+                        <input type="text" id="login-user" class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-sm focus:outline-none focus:border-gold-500 transition-colors" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2">Senha</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="login-pass" class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-sm focus:outline-none focus:border-gold-500 transition-colors" required>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-black font-semibold py-3.5 rounded-xl shadow-lg hover:from-gold-500 hover:to-gold-300 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm tracking-wide mt-2">
+                    Acessar Painel <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
+                </button>
+            </form>
+            <p class="text-center text-xs text-gray-400 mt-6">
+                Não tem uma conta?
+                <button id="show-register" class="text-gold-500 hover:underline font-medium">Criar Conta</button>
+            </p>
+        </div>
+
+        <!-- Formulário de CADASTRO (inicialmente oculto) -->
+        <div id="register-form-container" class="bg-white dark:bg-darkcard p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-darkborder backdrop-blur-sm animate-fade-in mx-4 hidden">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gold-500 text-black mb-4 shadow-lg shadow-gold-500/20">
+                    <i class="fa-solid fa-user-plus text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-bold tracking-wider text-gray-900 dark:text-white">CRIAR CONTA</h2>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Cadastre-se para acessar o painel</p>
+                <p class="dev-credit text-gray-500 dark:text-gray-500 mt-2 uppercase tracking-widest">Desenvolvido por <span class="text-gold-500 font-semibold">Domingos Sampanhe</span></p>
+            </div>
+            <form id="register-form" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2">Usuário</label>
+                    <input type="text" id="reg-user" class="w-full px-4 py-3 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-sm focus:outline-none focus:border-gold-500 transition-colors" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2">Senha</label>
+                    <input type="password" id="reg-pass" class="w-full px-4 py-3 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-sm focus:outline-none focus:border-gold-500 transition-colors" required>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-gold-600 to-gold-400 text-black font-semibold py-3.5 rounded-xl shadow-lg hover:from-gold-500 hover:to-gold-300 transition-all text-sm tracking-wide">
+                    Criar Conta <i class="fa-solid fa-check ml-2"></i>
+                </button>
+            </form>
+            <p class="text-center text-xs text-gray-400 mt-6">
+                Já possui cadastro?
+                <button id="show-login" class="text-gold-500 hover:underline font-medium">Fazer Login</button>
+            </p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER DO ECOSSISTEMA -->
+    <div id="app-container" class="hidden min-h-screen flex flex-col md:flex-row">
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-darkborder transform -translate-x-full md:translate-x-0 md:sticky transition-transform duration-300 flex flex-col justify-between">
+            <div>
+                <div class="p-6 border-b border-gray-100 dark:border-darkborder flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-gold-500 text-black flex items-center justify-center font-bold"><i class="fa-solid fa-scissors text-sm"></i></div>
+                        <span class="font-bold tracking-wider text-sm text-gray-900 dark:text-white">BARBER<span class="text-gold-500">OS</span></span>
+                    </div>
+                    <button id="close-sidebar" class="md:hidden text-gray-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <nav class="p-4 space-y-1">
+                    <a href="#" data-view="dashboard" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
+                    <a href="#" data-view="agendamentos" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"><i class="fa-regular fa-calendar-check w-5 text-center"></i> Agendamentos</a>
+                    <a href="#" data-view="clientes" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"><i class="fa-solid fa-users w-5 text-center"></i> Clientes</a>
+                    <a href="#" data-view="servicos" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"><i class="fa-solid fa-sparkles w-5 text-center"></i> Serviços</a>
+                    <a href="#" data-view="financeiro" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"><i class="fa-solid fa-wallet w-5 text-center"></i> Financeiro</a>
+                    <a href="#" data-view="caixa" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"><i class="fa-solid fa-cash-register w-5 text-center"></i> Caixa Diário</a>
+                    <a href="#" data-view="barbeiros" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"><i class="fa-solid fa-user-tie w-5 text-center"></i> Barbeiros</a>
+                    <a href="#" data-view="configuracoes" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"><i class="fa-solid fa-sliders w-5 text-center"></i> Configurações</a>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-gray-100 dark:border-darkborder bg-gray-50 dark:bg-darkbg/50 m-3 rounded-xl space-y-2">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-400">Caixa Atual</span>
+                    <span id="sidebar-status-caixa" class="text-[10px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded-full font-medium">Fechado</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300">AD</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-semibold text-gray-800 dark:text-gray-200 truncate">Administrador</p>
+                        <p class="text-[10px] text-gray-400 truncate">Mestre</p>
+                    </div>
+                    <button id="btn-logout" class="text-gray-400 hover:text-red-400 transition-colors text-sm"><i class="fa-solid fa-power-off"></i></button>
+                </div>
+                <!-- Crédito do desenvolvedor no sidebar -->
+                <div class="pt-2 border-t border-gray-100 dark:border-darkborder mt-2">
+                    <p class="dev-credit text-gray-400 dark:text-gray-500 text-center uppercase tracking-widest">
+                        Dev: <span class="text-gold-500 font-semibold">Domingos Sampanhe</span>
+                    </p>
+                    <div class="flex items-center justify-center gap-3 mt-1.5">
+                        <a href="https://wa.me/244927184916?text=Ol%C3%A1%2C%20vim%20do%20BarberOS%20Premium!" target="_blank" rel="noopener noreferrer" class="text-[10px] text-emerald-400 hover:text-emerald-300 transition-colors" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                        <a href="https://www.facebook.com/domingos.sampanhe01" target="_blank" rel="noopener noreferrer" class="text-[10px] text-blue-400 hover:text-blue-300 transition-colors" title="Facebook"><i class="fa-brands fa-facebook-f"></i> Facebook</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- WRAPPER DE CONTEÚDO PRINCIPAL -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+
+            <!-- TOPBAR HEADER -->
+            <header class="bg-white dark:bg-darkcard border-b border-gray-200 dark:border-darkborder sticky top-0 z-30 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button id="open-sidebar" class="md:hidden text-gray-500 hover:text-gray-800 dark:hover:text-white"><i class="fa-solid fa-bars text-lg"></i></button>
+                    <h2 id="view-title" class="text-lg font-semibold tracking-wide text-gray-900 dark:text-white">Dashboard</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="dark-mode-toggle" class="w-9 h-9 border border-gray-200 dark:border-darkborder dark:bg-darkbg rounded-xl flex items-center justify-center text-gray-500 dark:text-gold-400 hover:border-gold-500 transition-colors">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block"></i>
+                    </button>
+                    <div class="hidden sm:flex flex-col text-right">
+                        <span id="header-shop-name" class="text-xs font-bold text-gray-900 dark:text-white tracking-wider">BARBEARIA ELITE</span>
+                        <span class="text-[10px] text-gray-400" id="live-clock">Carregando hora...</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTEÚDO DINÂMICO DAS VIEWS -->
+            <main class="flex-1 p-4 md:p-6 space-y-6 max-w-[1600px] w-full mx-auto">
+
+                <!-- VIEW: DASHBOARD -->
+                <section id="view-dashboard" class="view-content space-y-6">
+
+                    <!-- CARROSSEL DE ANÚNCIOS (SLIDE INFINITO) -->
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder overflow-hidden">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-bullhorn text-gold-500 mr-2"></i>Ofertas & Parcerias</h4>
+                            <span class="text-[9px] text-gray-500 bg-gray-100 dark:bg-darkbg px-2 py-0.5 rounded-full">Publicidade</span>
+                        </div>
+                        <div class="overflow-hidden relative" id="anuncios-wrapper">
+                            <div class="anuncios-track" id="anuncios-track">
+                                <!-- Os cards são duplicados via JS para efeito infinito -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder shadow-sm flex flex-col justify-between group hover:border-gold-500/50 transition-all">
+                            <div class="flex items-center justify-between mb-3"><span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Clientes</span><div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xs"><i class="fa-solid fa-users"></i></div></div>
+                            <div><h3 id="kpi-clientes" class="text-xl font-bold tracking-tight">0</h3><p class="text-[10px] text-gray-400 mt-1">Cadastrados no app</p></div>
+                        </div>
+                        <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder shadow-sm flex flex-col justify-between group hover:border-gold-500/50 transition-all">
+                            <div class="flex items-center justify-between mb-3"><span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Agendamentos</span><div class="w-8 h-8 rounded-xl bg-gold-500/10 text-gold-400 flex items-center justify-center text-xs"><i class="fa-regular fa-calendar"></i></div></div>
+                            <div><h3 id="kpi-agendamentos" class="text-xl font-bold tracking-tight">0</h3><p class="text-[10px] text-gray-400 mt-1">Registros totais</p></div>
+                        </div>
+                        <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder shadow-sm flex flex-col justify-between group hover:border-gold-500/50 transition-all">
+                            <div class="flex items-center justify-between mb-3"><span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Entradas</span><div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-trend-up"></i></div></div>
+                            <div><h3 id="kpi-entradas" class="text-xl font-bold text-emerald-400 tracking-tight">Kz 0,00</h3><p class="text-[10px] text-gray-400 mt-1">Faturamento bruto</p></div>
+                        </div>
+                        <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder shadow-sm flex flex-col justify-between group hover:border-gold-500/50 transition-all">
+                            <div class="flex items-center justify-between mb-3"><span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Saídas</span><div class="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-trend-down"></i></div></div>
+                            <div><h3 id="kpi-saidas" class="text-xl font-bold text-rose-400 tracking-tight">Kz 0,00</h3><p class="text-[10px] text-gray-400 mt-1">Custos operacionais</p></div>
+                        </div>
+                        <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder shadow-sm col-span-2 lg:col-span-1 flex flex-col justify-between group hover:border-gold-500/50 transition-all bg-gradient-to-br from-white to-gray-50 dark:from-darkcard dark:to-darkbg">
+                            <div class="flex items-center justify-between mb-3"><span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Lucro Mensal</span><div class="w-8 h-8 rounded-xl bg-gold-500 text-black flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-dollar-sign"></i></div></div>
+                            <div><h3 id="kpi-lucro" class="text-xl font-bold text-gold-500 tracking-tight">Kz 0,00</h3><p class="text-[10px] text-gray-400 mt-1">Saldo líquido</p></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-white dark:bg-darkcard p-5 rounded-2xl border border-gray-100 dark:border-darkborder lg:col-span-2">
+                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-4 tracking-wide uppercase">Desempenho Financeiro</h4>
+                            <div class="h-64 relative w-full">
+                                <canvas id="chart-financeiro"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-darkcard p-5 rounded-2xl border border-gray-100 dark:border-darkborder flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white tracking-wide uppercase">Agenda de Hoje</h4>
+                                    <span id="dash-servicos-hoje" class="text-xs bg-gold-500/10 text-gold-400 px-2 py-0.5 rounded-full font-medium">0 Atendimentos</span>
+                                </div>
+                                <div id="dash-agenda-lista" class="space-y-3 max-h-56 overflow-y-auto pr-1"></div>
+                            </div>
+                            <button onclick="switchView('agendamentos')" class="w-full text-center py-2 text-xs font-medium text-gold-500 hover:text-gold-400 transition-colors mt-4 border-t border-gray-100 dark:border-darkborder pt-3">Ver agenda completa <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white dark:bg-darkcard p-5 rounded-2xl border border-gray-100 dark:border-darkborder">
+                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 tracking-wide uppercase">Últimos Clientes Atendidos</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="text-gray-400 border-b border-gray-100 dark:border-darkborder"><th class="pb-2">Nome</th><th class="pb-2">Telefone</th><th class="pb-2 text-right">Ação</th></tr>
+                                    </thead>
+                                    <tbody id="dash-ultimos-clientes"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-darkcard p-5 rounded-2xl border border-gray-100 dark:border-darkborder">
+                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 tracking-wide uppercase">Últimos Fluxos de Caixa</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="text-gray-400 border-b border-gray-100 dark:border-darkborder"><th class="pb-2">Descrição</th><th class="pb-2">Tipo</th><th class="pb-2 text-right">Valor</th></tr>
+                                    </thead>
+                                    <tbody id="dash-ultimos-pagamentos"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: AGENDAMENTOS -->
+                <section id="view-agendamentos" class="view-content hidden space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder">
+                        <div class="flex flex-wrap gap-2 items-center w-full sm:w-auto">
+                            <input type="text" id="agendamento-search" placeholder="Buscar agendamento..." class="px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500 w-full sm:w-48">
+                            <select id="agendamento-filtro-status" class="px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500">
+                                <option value="">Todos Status</option>
+                                <option value="Agendado">Agendado</option>
+                                <option value="Em andamento">Em andamento</option>
+                                <option value="Finalizado">Finalizado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <button onclick="openModal('modal-agendamento'); populateAgendamentoDropdowns();" class="bg-gold-500 hover:bg-gold-400 text-black px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md shadow-gold-500/10 w-full sm:w-auto justify-center"><i class="fa-solid fa-plus"></i> Novo Agendamento</button>
+                    </div>
+                    <div class="bg-white dark:bg-darkcard rounded-2xl border border-gray-100 dark:border-darkborder overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
+                                <thead class="bg-gray-50 dark:bg-darkbg text-gray-400 uppercase tracking-wider font-semibold border-b border-gray-100 dark:border-darkborder">
+                                    <tr><th class="p-4">Cliente</th><th class="p-4">Serviço</th><th class="p-4">Barbeiro</th><th class="p-4">Data/Hora</th><th class="p-4">Status</th><th class="p-4 text-right">Ações</th></tr>
+                                </thead>
+                                <tbody id="lista-agendamentos" class="divide-y divide-gray-100 dark:divide-darkborder"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: CLIENTES -->
+                <section id="view-clientes" class="view-content hidden space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder">
+                        <input type="text" id="cliente-search" placeholder="Pesquisar por nome, email ou fone..." class="px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500 w-full sm:w-64">
+                        <button onclick="document.getElementById('cli-id').value=''; document.getElementById('form-cliente').reset(); openModal('modal-cliente');" class="bg-gold-500 hover:bg-gold-400 text-black px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md shadow-gold-500/10 w-full sm:w-auto justify-center"><i class="fa-solid fa-user-plus"></i> Cadastrar Cliente</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-clientes"></div>
+                </section>
+
+                <!-- VIEW: SERVICOS -->
+                <section id="view-servicos" class="view-content hidden space-y-4">
+                    <div class="flex justify-end bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder">
+                        <button onclick="openModal('modal-servico'); document.getElementById('form-servico').reset();" class="bg-gold-500 hover:bg-gold-400 text-black px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md shadow-gold-500/10"><i class="fa-solid fa-plus"></i> Adicionar Serviço</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="grid-servicos"></div>
+                </section>
+
+                <!-- VIEW: FINANCEIRO -->
+                <section id="view-financeiro" class="view-content hidden space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder flex items-center justify-between"><div class="space-y-1"><span class="text-xs text-gray-400 block">Total Entradas</span><h3 id="fin-total-entradas" class="text-lg font-bold text-emerald-400">Kz 0,00</h3></div><div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-sm"><i class="fa-solid fa-arrow-up-long"></i></div></div>
+                        <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder flex items-center justify-between"><div class="space-y-1"><span class="text-xs text-gray-400 block">Total Saídas</span><h3 id="fin-total-saidas" class="text-lg font-bold text-rose-400">Kz 0,00</h3></div><div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-sm"><i class="fa-solid fa-arrow-down-long"></i></div></div>
+                        <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder flex items-center justify-between"><div class="space-y-1"><span class="text-xs text-gray-400 block">Saldo Operacional</span><h3 id="fin-saldo-atual" class="text-lg font-bold text-gold-500">Kz 0,00</h3></div><div class="w-10 h-10 rounded-xl bg-gold-500/10 text-gold-400 flex items-center justify-center text-sm"><i class="fa-solid fa-scale-balanced"></i></div></div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder">
+                        <div class="flex flex-wrap gap-2 items-center w-full sm:w-auto">
+                            <select id="fin-filtro-tipo" class="px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500">
+                                <option value="">Todos Lançamentos</option>
+                                <option value="Entrada">Entradas</option>
+                                <option value="Saída">Saídas</option>
+                            </select>
+                        </div>
+                        <button onclick="openModal('modal-financeiro'); document.getElementById('fin-data').value = new Date().toISOString().split('T')[0]; document.getElementById('form-financeiro').reset();" class="bg-gold-500 hover:bg-gold-400 text-black px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md shadow-gold-500/10 w-full sm:w-auto justify-center"><i class="fa-solid fa-plus"></i> Novo Lançamento</button>
+                    </div>
+                    <div class="bg-white dark:bg-darkcard rounded-2xl border border-gray-100 dark:border-darkborder overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
+                                <thead class="bg-gray-50 dark:bg-darkbg text-gray-400 uppercase tracking-wider font-semibold border-b border-gray-100 dark:border-darkborder">
+                                    <tr><th class="p-4">Descrição</th><th class="p-4">Categoria</th><th class="p-4">Tipo</th><th class="p-4">Data</th><th class="p-4">Valor</th><th class="p-4 text-right">Ação</th></tr>
+                                </thead>
+                                <tbody id="lista-financeiro" class="divide-y divide-gray-100 dark:divide-darkborder"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: CAIXA DIÁRIO -->
+                <section id="view-caixa" class="view-content hidden space-y-6">
+                    <div id="caixa-status-banner" class="p-6 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="caixa-stats-container"></div>
+                    <div class="bg-white dark:bg-darkcard p-5 rounded-2xl border border-gray-100 dark:border-darkborder space-y-3">
+                        <h4 class="text-sm font-semibold tracking-wide uppercase">Fluxo de Caixa Diário (Hoje)</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="text-gray-400 border-b border-gray-100 dark:border-darkborder"><th class="pb-2">Hora</th><th class="pb-2">Descrição</th><th class="pb-2">Tipo</th><th class="pb-2 text-right">Valor</th></tr>
+                                </thead>
+                                <tbody id="caixa-fluxo-hoje"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: BARBEIROS -->
+                <section id="view-barbeiros" class="view-content hidden space-y-4">
+                    <div class="flex justify-end bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder">
+                        <button onclick="openModal('modal-barbeiro'); document.getElementById('form-barbeiro').reset();" class="bg-gold-500 hover:bg-gold-400 text-black px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md shadow-gold-500/10"><i class="fa-solid fa-plus"></i> Contratar Barbeiro</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-barbeiros"></div>
+                </section>
+
+                <!-- VIEW: CONFIGURAÇÕES -->
+                <section id="view-configuracoes" class="view-content hidden space-y-6">
+                    <div class="max-w-2xl bg-white dark:bg-darkcard rounded-2xl border border-gray-100 dark:border-darkborder p-6 space-y-6">
+                        <h3 class="text-sm font-semibold tracking-wide uppercase border-b border-gray-100 dark:border-darkborder pb-3">Dados Corporativos da Barbearia</h3>
+                        <form id="form-configuracoes" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs text-gray-400 mb-2">Nome Comercial</label>
+                                    <input type="text" id="cfg-shop-name" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-400 mb-2">Telefone de Contato</label>
+                                    <input type="text" id="cfg-shop-phone" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-2">Endereço Completo</label>
+                                <input type="text" id="cfg-shop-address" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500">
+                            </div>
+                            <button type="submit" class="bg-gold-500 hover:bg-gold-400 text-black px-4 py-2.5 rounded-xl text-xs font-semibold transition-all">Salvar Configurações</button>
+                        </form>
+
+                        <!-- NOVOS BOTÕES: INSTALAR APP E APAGAR DADOS -->
+                        <div class="border-t border-gray-100 dark:border-darkborder pt-5 space-y-4">
+                            <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Ferramentas do Sistema</h4>
+
+                            <!-- Botão Instalar App -->
+                            <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                                <button id="btn-install-app" class="install-btn-glow bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-semibold py-3 px-5 rounded-xl text-xs flex items-center gap-2 shadow-lg hover:from-emerald-500 hover:to-emerald-300 transition-all w-full sm:w-auto justify-center">
+                                    <i class="fa-solid fa-download"></i> Instalar App no Dispositivo
+                                </button>
+                                <span class="text-[10px] text-gray-400">Disponível para Android e iOS (PWA)</span>
+                            </div>
+                            <p id="install-status-msg" class="text-[10px] text-gray-500 hidden"></p>
+
+                            <!-- Botão Apagar Todos os Dados -->
+                            <div class="pt-2">
+                                <button id="btn-apagar-dados" class="bg-rose-600 hover:bg-rose-500 text-white font-semibold py-3 px-5 rounded-xl text-xs flex items-center gap-2 shadow-lg transition-all w-full sm:w-auto justify-center">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Apagar Todos os Dados do App
+                                </button>
+                                <p class="text-[10px] text-gray-500 mt-2">Esta ação é irreversível! Remove todos os registros, clientes, agendamentos e fluxos financeiros.</p>
+                            </div>
+                        </div>
+
+                        <!-- Crédito do desenvolvedor na config -->
+                        <div class="border-t border-gray-100 dark:border-darkborder pt-4 mt-4 text-center">
+                            <p class="dev-credit text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                                Desenvolvido por <span class="text-gold-500 font-semibold">Domingos Sampanhe</span>
+                            </p>
+                            <div class="flex items-center justify-center gap-4 mt-2">
+                                <a href="https://wa.me/244927184916?text=Ol%C3%A1%2C%20vim%20do%20BarberOS%20Premium!" target="_blank" rel="noopener noreferrer" class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors"><i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp</a>
+                                <a href="https://www.facebook.com/domingos.sampanhe01" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-400 hover:text-blue-300 transition-colors"><i class="fa-brands fa-facebook-f mr-1"></i> Facebook</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- ============================================== MODAIS SYSTEM ============================================== -->
+
+    <!-- MODAL: AGENDAMENTO -->
+    <div id="modal-agendamento" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="bg-white dark:bg-darkcard border border-gray-100 dark:border-darkborder rounded-2xl w-full max-w-md p-6 transform scale-95 transition-transform duration-300 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-darkborder pb-3">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-gold-500" id="modal-agendamento-title">Novo Agendamento</h3>
+                <button onclick="closeModal('modal-agendamento')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="form-agendamento" class="space-y-3 text-xs">
+                <input type="hidden" id="agenda-id">
+                <div>
+                    <label class="block text-gray-400 mb-1">Selecione o Cliente</label>
+                    <select id="agenda-cliente" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500 text-white" required></select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Serviço Pretendido</label>
+                    <select id="agenda-servico" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500 text-white" required></select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Barbeiro Designado</label>
+                    <select id="agenda-barbeiro" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500 text-white" required></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Data</label>
+                        <input type="date" id="agenda-data" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500 text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Hora</label>
+                        <input type="time" id="agenda-hora" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500 text-white" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Status Operacional</label>
+                    <select id="agenda-status" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg text-xs focus:outline-none focus:border-gold-500 text-white">
+                        <option value="Agendado">Agendado</option>
+                        <option value="Em andamento">Em andamento</option>
+                        <option value="Finalizado">Finalizado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-gold-500 text-black font-semibold py-2.5 rounded-xl transition-all shadow-md shadow-gold-500/10 mt-2">Agendar Atendimento</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CLIENTE -->
+    <div id="modal-cliente" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="bg-white dark:bg-darkcard border border-gray-100 dark:border-darkborder rounded-2xl w-full max-w-md p-6 transform scale-95 transition-transform duration-300 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-darkborder pb-3">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-gold-500" id="modal-cliente-title">Cadastro de Cliente</h3>
+                <button onclick="closeModal('modal-cliente')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="form-cliente" class="space-y-3 text-xs">
+                <input type="hidden" id="cli-id">
+                <div>
+                    <label class="block text-gray-400 mb-1">Nome Completo</label>
+                    <input type="text" id="cli-nome" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Telefone</label>
+                        <input type="tel" id="cli-telefone" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Nascimento</label>
+                        <input type="date" id="cli-nascimento" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">E-mail</label>
+                    <input type="email" id="cli-email" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Observações / Restrições Químicas</label>
+                    <textarea id="cli-obs" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500 h-16 resize-none"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-gold-500 text-black font-semibold py-2.5 rounded-xl transition-all shadow-md shadow-gold-500/10 mt-2">Salvar Registro</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: SERVICO -->
+    <div id="modal-servico" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="bg-white dark:bg-darkcard border border-gray-100 dark:border-darkborder rounded-2xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-300 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-darkborder pb-3">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-gold-500">Configurar Serviço</h3>
+                <button onclick="closeModal('modal-servico')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="form-servico" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-gray-400 mb-1">Identificação do Serviço</label>
+                    <input type="text" id="srv-nome" placeholder="Ex: Degradê Navalhado" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Preço do Cardápio (Kz)</label>
+                        <input type="number" id="srv-preco" step="0.01" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Tempo Estimado (min)</label>
+                        <input type="number" id="srv-tempo" placeholder="Ex: 45" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-gold-500 text-black font-semibold py-2.5 rounded-xl transition-all mt-2">Salvar Serviço</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: LANÇAMENTO FINANCEIRO -->
+    <div id="modal-financeiro" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="bg-white dark:bg-darkcard border border-gray-100 dark:border-darkborder rounded-2xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-300 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-darkborder pb-3">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-gold-500">Lançamento de Caixa/Banco</h3>
+                <button onclick="closeModal('modal-financeiro')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="form-financeiro" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-gray-400 mb-1">Tipo de Operação</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" id="fin-btn-entrada" class="py-2 rounded-xl font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/50">ENTRADA</button>
+                        <button type="button" id="fin-btn-saida" class="py-2 rounded-xl font-bold bg-transparent text-gray-400 border border-gray-200 dark:border-darkborder">SAÍDA</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Descrição</label>
+                    <input type="text" id="fin-descricao" placeholder="Ex: Compra de Toalhas ou Gel" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Categoria</label>
+                        <select id="fin-categoria" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500 text-white" required></select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Valor (Kz)</label>
+                        <input type="number" id="fin-valor" step="0.01" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Data do Fluxo</label>
+                    <input type="date" id="fin-data" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500 text-white" required>
+                </div>
+                <button type="submit" class="w-full bg-gold-500 text-black font-semibold py-2.5 rounded-xl transition-all mt-2">Confirmar Lançamento</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: BARBEIRO -->
+    <div id="modal-barbeiro" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="bg-white dark:bg-darkcard border border-gray-100 dark:border-darkborder rounded-2xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-300 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-darkborder pb-3">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-gold-500">Novo Profissional</h3>
+                <button onclick="closeModal('modal-barbeiro')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="form-barbeiro" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-gray-400 mb-1">Nome do Barbeiro</label>
+                    <input type="text" id="bar-nome" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Especialidade Principal</label>
+                    <input type="text" id="bar-especialidade" placeholder="Ex: Degradê Visagista, Barboterapia" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Telefone</label>
+                        <input type="tel" id="bar-telefone" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Comissão (%)</label>
+                        <input type="number" id="bar-comissao" placeholder="Ex: 50" min="0" max="100" class="w-full px-3 py-2 border border-gray-200 dark:border-darkborder rounded-xl bg-gray-50 dark:bg-darkbg focus:outline-none focus:border-gold-500" required>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-gold-500 text-black font-semibold py-2.5 rounded-xl transition-all mt-2">Contratar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: HISTÓRICO DE CLIENTE -->
+    <div id="modal-historico" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="bg-white dark:bg-darkcard border border-gray-100 dark:border-darkborder rounded-2xl w-full max-w-xl p-6 transform scale-95 transition-transform duration-300 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-darkborder pb-3">
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-gold-500" id="hist-cliente-nome">Dossiê do Cliente</h3>
+                    <p class="text-[10px] text-gray-400 mt-0.5" id="hist-cliente-info"></p>
+                </div>
+                <button onclick="closeModal('modal-historico')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div class="bg-gray-50 dark:bg-darkbg/50 p-4 rounded-xl border border-gray-100 dark:border-darkborder h-64 flex flex-col">
+                    <h4 class="font-bold text-gray-400 mb-2 uppercase text-[10px] tracking-wide"><i class="fa-solid fa-history mr-1 text-gold-500"></i> Histórico de Cortes</h4>
+                    <div id="hist-cortes-lista" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+                </div>
+                <div class="bg-gray-50 dark:bg-darkbg/50 p-4 rounded-xl border border-gray-100 dark:border-darkborder h-64 flex flex-col">
+                    <h4 class="font-bold text-gray-400 mb-2 uppercase text-[10px] tracking-wide"><i class="fa-solid fa-dollar-sign mr-1 text-emerald-400"></i> Fluxo Financeiro</h4>
+                    <div id="hist-financeiro-lista" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: INSTRUÇÕES DE INSTALAÇÃO (iOS Fallback) -->
+    <div id="modal-install-instructions" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="bg-white dark:bg-darkcard border border-gray-100 dark:border-darkborder rounded-2xl w-full max-w-md p-6 transform scale-95 transition-transform duration-300 space-y-4 text-center">
+            <div class="text-gold-500 text-4xl mb-2"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">Instalar no iOS</h3>
+            <p class="text-xs text-gray-400">Para instalar este app no seu iPhone/iPad:</p>
+            <ol class="text-xs text-gray-300 text-left space-y-2 list-decimal list-inside bg-gray-50 dark:bg-darkbg/50 p-4 rounded-xl">
+                <li>Toque no ícone <b class="text-blue-400"><i class="fa-solid fa-arrow-up-from-bracket"></i> Compartilhar</b> na barra do Safari</li>
+                <li>Role e selecione <b>"Adicionar à Tela de Início"</b></li>
+                <li>Toque em <b>"Adicionar"</b> no canto superior direito</li>
+                <li>O app aparecerá na sua tela inicial como um aplicativo nativo!</li>
+            </ol>
+            <button onclick="closeModal('modal-install-instructions')" class="bg-gold-500 hover:bg-gold-400 text-black font-semibold py-2.5 px-6 rounded-xl text-xs transition-all mt-2">Entendi!</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT BLOCK (LÓGICA COMPLETA COM AUTENTICAÇÃO E DADOS) -->
+    <script>
+        // ==========================================================================
+        // USUÁRIOS (AUTENTICAÇÃO)
+        // ==========================================================================
+        let BD_USERS = JSON.parse(localStorage.getItem('barber_users')) || [
+            { username: 'admin', password: '123456' }
+        ];
+
+        function saveUsers() {
+            localStorage.setItem('barber_users', JSON.stringify(BD_USERS));
+        }
+
+        // ==========================================================================
+        // DADOS DE ANÚNCIOS (LINKS DE AFILIADO)
+        // ==========================================================================
+        const BD_ANUNCIOS = [
+            {
+                titulo: "Máquina Wahl Profissional",
+                descricao: "Corte preciso com lâmina autoafiável. Oferta exclusiva!",
+                imagem: "https://images.unsplash.com/photo-1621607512214-68297480165e?q=80&w=400&auto=format&fit=crop",
+                link: "https://www.example.com/afiliado-wahl?ref=barberos",
+                cta: "Comprar Agora",
+                badge: "-35% OFF"
+            },
+            {
+                titulo: "Kit Barber Premium",
+                descricao: "Tesoura, navalha e pente carbono. Kit completo profissional.",
+                imagem: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=400&auto=format&fit=crop",
+                link: "https://www.example.com/afiliado-kit?ref=barberos",
+                cta: "Ver Oferta",
+                badge: "Best Seller"
+            },
+            {
+                titulo: "Curso de Visagismo",
+                descricao: "Domine a arte do visagismo e aumente seu ticket médio.",
+                imagem: "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=400&auto=format&fit=crop",
+                link: "https://www.example.com/afiliado-curso?ref=barberos",
+                cta: "Inscrever-se",
+                badge: "Novo"
+            },
+            {
+                titulo: "Cadeira Barbeiro Elite",
+                descricao: "Conforto e estilo para sua barbearia. Frete grátis!",
+                imagem: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=400&auto=format&fit=crop",
+                link: "https://www.example.com/afiliado-cadeira?ref=barberos",
+                cta: "Aproveitar",
+                badge: "Frete Grátis"
+            },
+            {
+                titulo: "Linha de Barba Premium",
+                descricao: "Óleos, balms e shampoos importados para barba.",
+                imagem: "https://images.unsplash.com/photo-1621607512214-68297480165e?q=80&w=400&auto=format&fit=crop",
+                link: "https://www.example.com/afiliado-barba?ref=barberos",
+                cta: "Comprar Kit",
+                badge: "Top"
+            },
+            {
+                titulo: "Software Gestão Mobile",
+                descricao: "Gerencie seu negócio de qualquer lugar. Teste grátis!",
+                imagem: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=400&auto=format&fit=crop",
+                link: "https://www.example.com/afiliado-software?ref=barberos",
+                cta: "Testar Grátis",
+                badge: "Grátis"
+            }
+        ];
+
+        // ==========================================================================
+        // INFRAESTRUTURA DE DADOS (LOCALSTORAGE / SEED DATA)
+        // ==========================================================================
+        let BD_CLIENTES = JSON.parse(localStorage.getItem('barber_clientes')) || [
+            { id: 1, nome: "Mestre Dev", telefone: "927184916", email: "mestre@dev.com", nascimento: "1995-05-15",
+                obs: "Exigente. Corta cabelo sempre na tesoura." },
+            { id: 2, nome: "Anselmo Ralph", telefone: "912444555", email: "anselmo@music.ao", nascimento: "1988-10-20",
+                obs: "VIP, prefere a sala privada." }
+        ];
+
+        let BD_SERVICOS = JSON.parse(localStorage.getItem('barber_servicos')) || [
+            { id: 1, nome: "Corte Degradê", preco: 3500, tempo: 40 },
+            { id: 2, nome: "Barboterapia Premium", preco: 2500, tempo: 30 },
+            { id: 3, nome: "Combo Barber Imperial", preco: 5500, tempo: 70 }
+        ];
+
+        let BD_BARBEIROS = JSON.parse(localStorage.getItem('barber_barbeiros')) || [
+            { id: 1, nome: "Valdir Navalha", especialidade: "Visagismo & Degradê", telefone: "931000222",
+            comissao: 40 },
+            { id: 2, nome: "Preto Show Barber", especialidade: "Pigmentação e Barba", telefone: "945999888",
+            comissao: 50 }
+        ];
+
+        let BD_AGENDAMENTOS = JSON.parse(localStorage.getItem('barber_agendamentos')) || [
+            { id: 1, clienteId: 1, servicoId: 1, barbeiroId: 1, data: new Date().toISOString().split('T')[0], hora: "14:30",
+                status: "Agendado" },
+            { id: 2, clienteId: 2, servicoId: 3, barbeiroId: 2, data: new Date().toISOString().split('T')[0], hora: "16:00",
+                status: "Finalizado" }
+        ];
+
+        let BD_FINANCEIRO = JSON.parse(localStorage.getItem('barber_financeiro')) || [
+            { id: 1, descricao: "Combo Barber Imperial - Anselmo", categoria: "Serviços", tipo: "Entrada", valor: 5500,
+                data: new Date().toISOString().split('T')[0] },
+            { id: 2, descricao: "Comissão Preto Show Barber", categoria: "Salários", tipo: "Saída", valor: 2750,
+                data: new Date().toISOString().split('T')[0] },
+            { id: 3, descricao: "Internet Fibra Zap", categoria: "Internet", tipo: "Saída", valor: 15000,
+                data: new Date().toISOString().split('T')[0] }
+        ];
+
+        let BD_CAIXA = JSON.parse(localStorage.getItem('barber_caixa')) || {
+            status: "Fechado",
+            aberturaValor: 0,
+            dataAbertura: null
+        };
+
+        let BD_CONFIG = JSON.parse(localStorage.getItem('barber_config')) || {
+            name: "BARBEARIA ELITE BENGUELA",
+            phone: "927 184 916",
+            address: "Av. Lourenço Macanga, Zona Comercial"
+        };
+
+        let financeChartInstance = null;
+
+        // ==========================================================================
+        // PWA - INSTALL HANDLER
+        // ==========================================================================
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('btn-install-app');
+            if (installBtn) {
+                installBtn.classList.remove('hidden');
+                installBtn.style.display = 'flex';
+            }
+            const statusMsg = document.getElementById('install-status-msg');
+            if (statusMsg) {
+                statusMsg.classList.remove('hidden');
+                statusMsg.innerText = '✔ App disponível para instalação! Clique no botão acima.';
+                statusMsg.className = 'text-[10px] text-emerald-400';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            const statusMsg = document.getElementById('install-status-msg');
+            if (statusMsg) {
+                statusMsg.classList.remove('hidden');
+                statusMsg.innerText = '✔ App instalado com sucesso no seu dispositivo!';
+                statusMsg.className = 'text-[10px] text-emerald-400';
+            }
+            showToast('App instalado com sucesso! 🎉', 'success');
+        });
+
+        function triggerInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showToast('App sendo instalado...', 'success');
+                    } else {
+                        showToast('Instalação cancelada. Pode tentar novamente.', 'info');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // Fallback para iOS ou navegadores sem suporte
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                if (isIOS) {
+                    openModal('modal-install-instructions');
+                } else {
+                    showToast(
+                        'Para instalar: use o menu do navegador e selecione "Adicionar à tela inicial" ou "Instalar aplicativo".',
+                        'info');
+                }
+            }
+        }
+
+        // ==========================================================================
+        // CORE INITIALIZATION
+        // ==========================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            initClock();
+            setupEventListeners();
+            applyConfigDOM();
+            renderAnunciosCarrossel();
+            if (sessionStorage.getItem('barber_logged') === 'true') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                document.getElementById('social-float-buttons').style.display = 'flex';
+                renderActiveView();
+            }
+            // Inicializar botão de instalar como visível (fallback)
+            const installBtn = document.getElementById('btn-install-app');
+            if (installBtn && !deferredPrompt) {
+                // Já está visível por padrão
+                const statusMsg = document.getElementById('install-status-msg');
+                if (statusMsg) {
+                    statusMsg.classList.remove('hidden');
+                    statusMsg.innerText =
+                        '📱 Clique para instalar o app na tela inicial. Compatível com Android e iOS.';
+                    statusMsg.className = 'text-[10px] text-gray-400';
+                }
+            }
+        });
+
+        function sync() {
+            localStorage.setItem('barber_clientes', JSON.stringify(BD_CLIENTES));
+            localStorage.setItem('barber_servicos', JSON.stringify(BD_SERVICOS));
+            localStorage.setItem('barber_barbeiros', JSON.stringify(BD_BARBEIROS));
+            localStorage.setItem('barber_agendamentos', JSON.stringify(BD_AGENDAMENTOS));
+            localStorage.setItem('barber_financeiro', JSON.stringify(BD_FINANCEIRO));
+            localStorage.setItem('barber_caixa', JSON.stringify(BD_CAIXA));
+            localStorage.setItem('barber_config', JSON.stringify(BD_CONFIG));
+            renderActiveView();
+        }
+
+        function initClock() {
+            const updateClock = () => {
+                const now = new Date();
+                document.getElementById('live-clock').innerText = now.toLocaleDateString('pt-BR') + ' | ' + now
+                    .toLocaleTimeString('pt-BR');
+            };
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        function applyConfigDOM() {
+            document.getElementById('header-shop-name').innerText = BD_CONFIG.name;
+            document.getElementById('cfg-shop-name').value = BD_CONFIG.name;
+            document.getElementById('cfg-shop-phone').value = BD_CONFIG.phone;
+            document.getElementById('cfg-shop-address').value = BD_CONFIG.address;
+        }
+
+        // ==========================================================================
+        // RENDER DO CARROSSEL DE ANÚNCIOS (SLIDE INFINITO)
+        // ==========================================================================
+        function renderAnunciosCarrossel() {
+            const track = document.getElementById('anuncios-track');
+            if (!track) return;
+
+            let cardsHTML = '';
+            // Duplicar para efeito infinito
+            const anunciosDuplicados = [...BD_ANUNCIOS, ...BD_ANUNCIOS];
+
+            anunciosDuplicados.forEach((anuncio, index) => {
+                cardsHTML += `
+                    <div class="anuncio-card bg-white dark:bg-darkbg border border-gray-100 dark:border-darkborder shadow-md flex-shrink-0 cursor-pointer" onclick="window.open('${anuncio.link}', '_blank', 'noopener,noreferrer')" title="${anuncio.titulo}">
+                        <div class="relative h-36 overflow-hidden">
+                            <img src="${anuncio.imagem}" alt="${anuncio.titulo}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=400&auto=format&fit=crop'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                            <span class="cta-badge">${anuncio.badge}</span>
+                            <div class="absolute bottom-2 left-3 right-3">
+                                <p class="text-white font-semibold text-xs leading-tight drop-shadow-md">${anuncio.titulo}</p>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] text-gray-400 line-clamp-2 mb-2">${anuncio.descricao}</p>
+                            <span class="inline-block bg-gold-500 hover:bg-gold-400 text-black font-bold text-[10px] px-3 py-1.5 rounded-lg transition-colors w-full text-center cursor-pointer">
+                                ${anuncio.cta} <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </span>
+                        </div>
+                    </div>`;
+            });
+            track.innerHTML = cardsHTML;
+        }
+
+        // ==========================================================================
+        // ROUTER / NAVIGATION
+        // ==========================================================================
+        function switchView(viewName) {
+            document.querySelectorAll('.view-content').forEach(view => view.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            const targetView = document.getElementById(`view-${viewName}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const activeNav = document.querySelector(`.nav-item[data-view="${viewName}"]`);
+            if (activeNav) activeNav.classList.add('active');
+
+            document.getElementById('view-title').innerText = viewName.charAt(0).toUpperCase() + viewName.slice(1);
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+
+            renderActiveView();
+        }
+
+        function renderActiveView() {
+            const currentView = document.querySelector('.nav-item.active').getAttribute('data-view');
+
+            const statusCaixaBadge = document.getElementById('sidebar-status-caixa');
+            if (BD_CAIXA.status === 'Aberto') {
+                statusCaixaBadge.innerText = "Aberto";
+                statusCaixaBadge.className =
+                    "text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-medium";
+            } else {
+                statusCaixaBadge.innerText = "Fechado";
+                statusCaixaBadge.className =
+                    "text-[10px] bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded-full font-medium";
+            }
+
+            switch (currentView) {
+                case 'dashboard':
+                    renderDashboard();
+                    break;
+                case 'agendamentos':
+                    renderAgendamentos();
+                    break;
+                case 'clientes':
+                    renderClientes();
+                    break;
+                case 'servicos':
+                    renderServicos();
+                    break;
+                case 'financeiro':
+                    renderFinanceiro();
+                    break;
+                case 'caixa':
+                    renderCaixaView();
+                    break;
+                case 'barbeiros':
+                    renderBarbeiros();
+                    break;
+            }
+        }
+
+        // ==========================================================================
+        // VIEW RENDERS & LOGIC
+        // ==========================================================================
+        function renderDashboard() {
+            document.getElementById('kpi-clientes').innerText = BD_CLIENTES.length;
+            document.getElementById('kpi-agendamentos').innerText = BD_AGENDAMENTOS.length;
+
+            const totalEntradas = BD_FINANCEIRO.filter(f => f.tipo === 'Entrada').reduce((acc, f) => acc + f.valor, 0);
+            const totalSaidas = BD_FINANCEIRO.filter(f => f.tipo === 'Saída').reduce((acc, f) => acc + f.valor, 0);
+            const lucro = totalEntradas - totalSaidas;
+
+            document.getElementById('kpi-entradas').innerText = `Kz ${totalEntradas.toLocaleString()}`;
+            document.getElementById('kpi-saidas').innerText = `Kz ${totalSaidas.toLocaleString()}`;
+            document.getElementById('kpi-lucro').innerText = `Kz ${lucro.toLocaleString()}`;
+
+            const hojeStr = new Date().toISOString().split('T')[0];
+            const hojeAgendamentos = BD_AGENDAMENTOS.filter(a => a.data === hojeStr);
+            document.getElementById('dash-servicos-hoje').innerText = `${hojeAgendamentos.length} Hoje`;
+
+            let agendaHTML = '';
+            hojeAgendamentos.sort((a, b) => a.hora.localeCompare(b.hora)).forEach(a => {
+                const cli = BD_CLIENTES.find(c => c.id == a.clienteId);
+                const srv = BD_SERVICOS.find(s => s.id == a.servicoId);
+                agendaHTML += `
+                    <div class="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-darkbg/40 border border-gray-100 dark:border-darkborder rounded-xl">
+                        <div>
+                            <p class="font-semibold text-xs">${cli ? cli.nome : 'Cliente Desconhecido'}</p>
+                            <p class="text-[10px] text-gray-400">${srv ? srv.nome : 'Serviço'} às <span class="text-gold-500 font-medium">${a.hora}</span></p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md text-[9px] font-bold ${getStatusClass(a.status)}">${a.status}</span>
+                    </div>`;
+            });
+            document.getElementById('dash-agenda-lista').innerHTML = agendaHTML ||
+                '<p class="text-xs text-gray-500 p-2 text-center">Nenhum atendimento para hoje.</p>';
+
+            let ultimosCliHTML = '';
+            BD_CLIENTES.slice(-4).reverse().forEach(c => {
+                ultimosCliHTML += `
+                    <tr class="border-b border-gray-100 dark:border-darkborder hover:bg-gray-50/50 dark:hover:bg-darkbg/20">
+                        <td class="py-2.5 font-medium">${c.nome}</td>
+                        <td class="py-2.5 text-gray-400">${c.telefone}</td>
+                        <td class="py-2.5 text-right"><button onclick="verDossieCliente(${c.id})" class="text-gold-500 hover:underline text-[11px]">Dossiê</button></td>
+                    </tr>`;
+            });
+            document.getElementById('dash-ultimos-clientes').innerHTML = ultimosCliHTML;
+
+            let ultimosFinHTML = '';
+            BD_FINANCEIRO.slice(-4).reverse().forEach(f => {
+                ultimosFinHTML += `
+                    <tr class="border-b border-gray-100 dark:border-darkborder">
+                        <td class="py-2.5 max-w-[120px] truncate font-medium">${f.descricao}</td>
+                        <td class="py-2.5"><span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${f.tipo === 'Entrada' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">${f.tipo}</span></td>
+                        <td class="py-2.5 text-right font-semibold ${f.tipo === 'Entrada' ? 'text-emerald-400' : 'text-rose-400'}">Kz ${f.valor.toLocaleString()}</td>
+                    </tr>`;
+            });
+            document.getElementById('dash-ultimos-pagamentos').innerHTML = ultimosFinHTML;
+
+            renderFinanceChart(totalEntradas, totalSaidas);
+            // Re-render anúncios ao carregar dashboard
+            renderAnunciosCarrossel();
+        }
+
+        function renderFinanceChart(entradas, saidas) {
+            const ctx = document.getElementById('chart-financeiro').getContext('2d');
+            if (financeChartInstance) financeChartInstance.destroy();
+            financeChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Faturamento Bruto', 'Custos Operacionais'],
+                    datasets: [{
+                        data: [entradas, saidas],
+                        backgroundColor: ['rgba(197, 160, 40, 0.85)', 'rgba(244, 63, 94, 0.85)'],
+                        borderColor: ['#c5a028', '#f43f5e'],
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af',
+                            font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        function renderAgendamentos() {
+            const searchVal = document.getElementById('agendamento-search').value.toLowerCase();
+            const filterStatus = document.getElementById('agendamento-filtro-status').value;
+
+            let html = '';
+            const filtrados = BD_AGENDAMENTOS.filter(a => {
+                const cli = BD_CLIENTES.find(c => c.id == a.clienteId);
+                const matchSearch = cli ? cli.nome.toLowerCase().includes(searchVal) : false;
+                const matchStatus = filterStatus ? a.status === filterStatus : true;
+                return matchSearch && matchStatus;
+            });
+
+            populateAgendamentoDropdowns();
+
+            filtrados.reverse().forEach(a => {
+                const cli = BD_CLIENTES.find(c => c.id == a.clienteId);
+                const srv = BD_SERVICOS.find(s => s.id == a.servicoId);
+                const bar = BD_BARBEIROS.find(b => b.id == a.barbeiroId);
+
+                html += `
+                    <tr class="hover:bg-gray-50/50 dark:hover:bg-darkbg/40 transition-colors">
+                        <td class="p-4 font-medium">${cli ? cli.nome : 'Desconhecido'}</td>
+                        <td class="p-4 text-gray-400">${srv ? srv.nome : 'Desconhecido'}</td>
+                        <td class="p-4">${bar ? bar.nome : 'Desconhecido'}</td>
+                        <td class="p-4 font-medium">${a.data} <span class="text-gold-500 ml-1">${a.hora}</span></td>
+                        <td class="p-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusClass(a.status)}">${a.status}</span></td>
+                        <td class="p-4 text-right space-x-2">
+                            ${a.status !== 'Finalizado' && a.status !== 'Cancelado' ? `
+                                <button onclick="alterarStatusAgendamento(${a.id}, 'Em andamento')" class="text-blue-400 hover:text-blue-300 text-xs" title="Iniciar"><i class="fa-solid fa-play"></i></button>
+                                <button onclick="finalizarAtendimento(${a.id})" class="text-emerald-400 hover:text-emerald-300 text-xs" title="Finalizar"><i class="fa-solid fa-check-double"></i></button>
+                            ` : ''}
+                            <button onclick="deletarAgendamento(${a.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+            document.getElementById('lista-agendamentos').innerHTML = html ||
+                '<tr><td colspan="6" class="p-8 text-center text-gray-500">Nenhum registro.</td></tr>';
+        }
+
+        function renderClientes() {
+            const searchVal = document.getElementById('cliente-search').value.toLowerCase();
+            let html = '';
+            const filtrados = BD_CLIENTES.filter(c => c.nome.toLowerCase().includes(searchVal) || c.telefone.includes(
+                searchVal));
+
+            filtrados.forEach(c => {
+                html += `
+                    <div class="bg-white dark:bg-darkcard p-5 rounded-2xl border border-gray-100 dark:border-darkborder flex flex-col justify-between shadow-sm">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-500 to-amber-600 text-black flex items-center justify-center font-bold text-sm">${c.nome.charAt(0)}</div>
+                                <div class="min-w-0">
+                                    <h4 class="font-semibold text-xs truncate">${c.nome}</h4>
+                                    <p class="text-[10px] text-gray-400 truncate">${c.email || 'Sem e-mail'}</p>
+                                </div>
+                            </div>
+                            <div class="text-[11px] space-y-1 bg-gray-50 dark:bg-darkbg/40 p-2.5 rounded-xl border border-gray-100 dark:border-darkborder">
+                                <p><span class="text-gray-400">Fone:</span> <span class="font-medium">${c.telefone}</span></p>
+                                <p><span class="text-gray-400">Nasc:</span> <span>${c.nascimento || 'Não informado'}</span></p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 justify-between mt-4 pt-3 border-t border-gray-100 dark:border-darkborder text-[11px]">
+                            <button onclick="verDossieCliente(${c.id})" class="text-gold-500 hover:underline"><i class="fa-solid fa-folder-open mr-1"></i> Dossiê</button>
+                            <div class="space-x-3">
+                                <button onclick="editarClienteModal(${c.id})" class="text-blue-400 hover:text-blue-300"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deletarCliente(${c.id})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('grid-clientes').innerHTML = html || '<p class="text-xs text-gray-500 p-4">Nenhum cliente.</p>';
+        }
+
+        function renderServicos() {
+            let html = '';
+            BD_SERVICOS.forEach(s => {
+                html += `
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder flex flex-col justify-between shadow-sm">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="w-8 h-8 rounded-lg bg-gold-500/10 text-gold-400 flex items-center justify-center text-xs"><i class="fa-solid fa-cut"></i></span>
+                                <span class="text-[10px] bg-gray-100 dark:bg-darkbg text-gray-400 px-2 py-0.5 rounded-md font-medium"><i class="fa-regular fa-clock mr-1"></i>${s.tempo} min</span>
+                            </div>
+                            <h4 class="font-semibold text-xs text-gray-900 dark:text-white mb-1">${s.nome}</h4>
+                        </div>
+                        <div class="flex items-center justify-between mt-4 pt-2 border-t border-gray-100 dark:border-darkborder">
+                            <span class="text-xs font-bold text-gold-500">Kz ${s.preco.toLocaleString()}</span>
+                            <button onclick="deletarServico(${s.id})" class="text-gray-500 hover:text-rose-400 transition-colors text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('grid-servicos').innerHTML = html || '<p class="text-xs text-gray-500">Nenhum serviço.</p>';
+        }
+
+        function renderFinanceiro() {
+            const filterTipo = document.getElementById('fin-filtro-tipo').value;
+            let html = '';
+            const filtrados = BD_FINANCEIRO.filter(f => filterTipo ? f.tipo === filterTipo : true);
+
+            const entradas = BD_FINANCEIRO.filter(f => f.tipo === 'Entrada').reduce((acc, f) => acc + f.valor, 0);
+            const saidas = BD_FINANCEIRO.filter(f => f.tipo === 'Saída').reduce((acc, f) => acc + f.valor, 0);
+
+            document.getElementById('fin-total-entradas').innerText = `Kz ${entradas.toLocaleString()}`;
+            document.getElementById('fin-total-saidas').innerText = `Kz ${saidas.toLocaleString()}`;
+            document.getElementById('fin-saldo-atual').innerText = `Kz ${(entradas - saidas).toLocaleString()}`;
+
+            filtrados.reverse().forEach(f => {
+                html += `
+                    <tr class="hover:bg-gray-50/50 dark:hover:bg-darkbg/40 transition-colors">
+                        <td class="p-4 font-medium">${f.descricao}</td>
+                        <td class="p-4 text-gray-400">${f.categoria}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${f.tipo === 'Entrada' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">${f.tipo}</span></td>
+                        <td class="p-4 text-gray-400">${f.data}</td>
+                        <td class="p-4 font-bold ${f.tipo === 'Entrada' ? 'text-emerald-400' : 'text-rose-400'}">Kz ${f.valor.toLocaleString()}</td>
+                        <td class="p-4 text-right"><button onclick="deletarFinanceiro(${f.id})" class="text-gray-400 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>`;
+            });
+            document.getElementById('lista-financeiro').innerHTML = html ||
+                '<tr><td colspan="6" class="p-4 text-center text-gray-500">Sem fluxos.</td></tr>';
+        }
+
+        function renderCaixaView() {
+            const banner = document.getElementById('caixa-status-banner');
+            const containerStats = document.getElementById('caixa-stats-container');
+            const hojeStr = new Date().toISOString().split('T')[0];
+
+            const fluxosHoje = BD_FINANCEIRO.filter(f => f.data === hojeStr);
+            const entDia = fluxosHoje.filter(f => f.tipo === 'Entrada').reduce((acc, f) => acc + f.valor, 0);
+            const saiDia = fluxosHoje.filter(f => f.tipo === 'Saída').reduce((acc, f) => acc + f.valor, 0);
+            const lucDia = entDia - saiDia;
+
+            if (BD_CAIXA.status === 'Fechado') {
+                banner.className =
+                    "p-6 rounded-2xl border border-rose-500/30 bg-rose-500/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4";
+                banner.innerHTML = `
+                    <div>
+                        <h4 class="text-sm font-bold text-rose-400 uppercase tracking-wide"><i class="fa-solid fa-lock mr-2"></i>Caixa Diário Trancado</h4>
+                        <p class="text-xs text-gray-400 mt-1">Abra o caixa matinal para iniciar as operações financeiras.</p>
+                    </div>
+                    <button onclick="abrirCaixaOperação()" class="bg-gradient-to-r from-gold-600 to-gold-400 text-black text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg">Abrir Caixa</button>`;
+                containerStats.innerHTML = '';
+                document.getElementById('caixa-fluxo-hoje').innerHTML =
+                    '<tr><td colspan="4" class="p-4 text-center text-gray-500">Abra o caixa operacional.</td></tr>';
+                return;
+            }
+
+            banner.className =
+                "p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4";
+            banner.innerHTML = `
+                <div>
+                    <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wide"><i class="fa-solid fa-lock-open mr-2"></i>Caixa Operando ao Vivo</h4>
+                    <p class="text-xs text-gray-400 mt-1">Fundo operacional inicial: <b>Kz ${BD_CAIXA.aberturaValor.toLocaleString()}</b></p>
+                </div>
+                <button onclick="fecharCaixaOperação(${entDia}, ${saiDia}, ${lucDia})" class="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg">Fechar Caixa</button>`;
+
+            containerStats.innerHTML = `
+                <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder"><span class="text-xs text-gray-400 block mb-1">Entradas do Dia</span><h3 class="text-base font-bold text-emerald-400">Kz ${entDia.toLocaleString()}</h3></div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder"><span class="text-xs text-gray-400 block mb-1">Saídas do Dia</span><h3 class="text-base font-bold text-rose-400">Kz ${saiDia.toLocaleString()}</h3></div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-darkborder"><span class="text-xs text-gray-400 block mb-1">Lucro do Dia</span><h3 class="text-base font-bold text-gold-500">Kz ${lucDia.toLocaleString()}</h3></div>`;
+
+            let fluxoHTML = '';
+            fluxosHoje.forEach(f => {
+                fluxoHTML += `
+                    <tr class="border-b border-gray-100 dark:border-darkborder">
+                        <td class="py-2.5 text-gray-400 font-mono">Hoje</td>
+                        <td class="py-2.5 font-medium">${f.descricao}</td>
+                        <td class="py-2.5"><span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${f.tipo === 'Entrada' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">${f.tipo}</span></td>
+                        <td class="py-2.5 text-right font-bold ${f.tipo === 'Entrada' ? 'text-emerald-400' : 'text-rose-400'}">Kz ${f.valor.toLocaleString()}</td>
+                    </tr>`;
+            });
+            document.getElementById('caixa-fluxo-hoje').innerHTML = fluxoHTML ||
+                '<tr><td colspan="4" class="p-4 text-center text-gray-500">Nenhum fluxo hoje.</td></tr>';
+        }
+
+        function renderBarbeiros() {
+            let html = '';
+            BD_BARBEIROS.forEach(b => {
+                const servs = BD_AGENDAMENTOS.filter(a => a.barbeiroId == b.id && a.status === 'Finalizado');
+                const comissaoAcumulada = servs.reduce((acc, a) => {
+                    const srv = BD_SERVICOS.find(s => s.id == a.servicoId);
+                    return acc + (srv ? (srv.preco * (b.comissao / 100)) : 0);
+                }, 0);
+
+                html += `
+                    <div class="bg-white dark:bg-darkcard p-5 rounded-2xl border border-gray-100 dark:border-darkborder flex flex-col justify-between shadow-sm">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-gray-800 border border-darkborder flex items-center justify-center text-gold-500 text-lg"><i class="fa-solid fa-user-tie"></i></div>
+                                <div>
+                                    <h4 class="font-semibold text-xs">${b.nome}</h4>
+                                    <p class="text-[10px] text-gray-400">${b.especialidade}</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 dark:bg-darkbg/40 p-2.5 rounded-xl border border-gray-100 dark:border-darkborder text-[11px] space-y-1">
+                                <p class="flex justify-between"><span class="text-gray-400">Cortes Feitos:</span> <span class="font-bold text-white">${servs.length}</span></p>
+                                <p class="flex justify-between"><span class="text-gray-400">Comissão:</span> <span class="text-gold-400 font-medium">${b.comissao}%</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-darkborder">
+                            <div class="text-left"><span class="text-[9px] text-gray-400 block uppercase">Comissão Acumulada</span><span class="text-xs font-bold text-emerald-400">Kz ${comissaoAcumulada.toLocaleString()}</span></div>
+                            <button onclick="demitirBarbeiro(${b.id})" class="text-gray-400 hover:text-rose-400 transition-colors text-xs"><i class="fa-solid fa-user-minus"></i></button>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('grid-barbeiros').innerHTML = html ||
+                '<p class="text-xs text-gray-500">Nenhum profissional.</p>';
+        }
+
+        // ==========================================================================
+        // WORKFLOW FINANCEIRO & OPERACIONAL
+        // ==========================================================================
+        function abrirCaixaOperação() {
+            const valorAbertura = parseFloat(prompt("Fundo operacional de maneio inicial (Kz):", "5000"));
+            if (!isNaN(valorAbertura)) {
+                BD_CAIXA.status = "Aberto";
+                BD_CAIXA.aberturaValor = valorAbertura;
+                BD_CAIXA.dataAbertura = new Date().toISOString();
+                showToast("Caixa aberto com sucesso!", "success");
+                sync();
+            }
+        }
+
+        function fecharCaixaOperação(e, s, l) {
+            if (confirm(
+                    `Resumo Geral:\n\nEntradas: Kz ${e.toLocaleString()}\nSaídas: Kz ${s.toLocaleString()}\nLucro Líquido: Kz ${l.toLocaleString()}\n\nConfirmar encerramento contábil?`
+                    )) {
+                BD_CAIXA.status = "Fechado";
+                BD_CAIXA.aberturaValor = 0;
+                BD_CAIXA.dataAbertura = null;
+                showToast("Caixa fechado com sucesso!", "info");
+                sync();
+            }
+        }
+
+        function finalizarAtendimento(agendamentoId) {
+            if (BD_CAIXA.status !== 'Aberto') {
+                showToast("Erro: É necessário abrir o Caixa antes de finalizar serviços!", "error");
+                return;
+            }
+            const a = BD_AGENDAMENTOS.find(item => item.id == agendamentoId);
+            if (a) {
+                a.status = "Finalizado";
+                const cli = BD_CLIENTES.find(c => c.id == a.clienteId);
+                const srv = BD_SERVICOS.find(s => s.id == a.servicoId);
+                const bar = BD_BARBEIROS.find(b => b.id == a.barbeiroId);
+
+                BD_FINANCEIRO.push({
+                    id: Date.now(),
+                    descricao: `${srv ? srv.nome : 'Serviço'} - ${cli ? cli.nome : 'Cliente'}`,
+                    categoria: "Serviços",
+                    tipo: "Entrada",
+                    valor: srv ? srv.preco : 0,
+                    data: new Date().toISOString().split('T')[0]
+                });
+
+                if (bar && srv) {
+                    const valorComissao = srv.preco * (bar.comissao / 100);
+                    BD_FINANCEIRO.push({
+                        id: Date.now() + 1,
+                        descricao: `Comissão ${bar.nome} (${srv.nome})`,
+                        categoria: "Salários",
+                        tipo: "Saída",
+                        valor: valorComissao,
+                        data: new Date().toISOString().split('T')[0]
+                    });
+                }
+                showToast("Atendimento finalizado e fluxo computado!", "success");
+                sync();
+            }
+        }
+
+        function alterarStatusAgendamento(id, novoStatus) {
+            const a = BD_AGENDAMENTOS.find(item => item.id == id);
+            if (a) {
+                a.status = novoStatus;
+                showToast(`Status alterado para: ${novoStatus}`, "info");
+                sync();
+            }
+        }
+
+        function verDossieCliente(clienteId) {
+            const cli = BD_CLIENTES.find(c => c.id == clienteId);
+            if (!cli) return;
+
+            document.getElementById('hist-cliente-nome').innerText = cli.nome;
+            document.getElementById('hist-cliente-info').innerText = `Fone: ${cli.telefone} | Email: ${cli.email || 'N/A'}`;
+
+            const cortes = BD_AGENDAMENTOS.filter(a => a.clienteId == clienteId);
+            let cortesHTML = '';
+            cortes.forEach(c => {
+                const srv = BD_SERVICOS.find(s => s.id == c.servicoId);
+                cortesHTML += `
+                    <div class="p-2 border-b border-gray-100 dark:border-darkborder text-[11px] flex justify-between">
+                        <span><b>${c.data}</b> - ${srv ? srv.nome : 'Serviço'}</span>
+                        <span class="font-semibold text-gold-500">${c.status}</span>
+                    </div>`;
+            });
+            document.getElementById('hist-cortes-lista').innerHTML = cortesHTML ||
+                '<p class="text-gray-500 text-center text-[11px]">Nenhum histórico.</p>';
+
+            const fluxos = BD_FINANCEIRO.filter(f => f.descricao.includes(cli.nome));
+            let fluxosHTML = '';
+            fluxos.forEach(f => {
+                fluxosHTML += `
+                    <div class="p-2 border-b border-gray-100 dark:border-darkborder text-[11px] flex justify-between">
+                        <span>${f.descricao}</span>
+                        <span class="font-bold text-emerald-400">Kz ${f.valor.toLocaleString()}</span>
+                    </div>`;
+            });
+            document.getElementById('hist-financeiro-lista').innerHTML = fluxosHTML ||
+                '<p class="text-gray-500 text-center text-[11px]">Nenhum fluxo direto.</p>';
+
+            openModal('modal-historico');
+        }
+
+        // ==========================================================================
+        // FUNÇÃO: APAGAR TODOS OS DADOS DO APP
+        // ==========================================================================
+        function apagarTodosOsDados() {
+            const confirmacao1 = confirm(
+                "⚠️ ATENÇÃO! Esta ação é IRREVERSÍVEL!\n\nIsto irá apagar TODOS os dados:\n- Clientes\n- Agendamentos\n- Serviços\n- Barbeiros\n- Fluxos Financeiros\n- Configurações\n- Estado do Caixa\n\nTem certeza absoluta?"
+                );
+            if (!confirmacao1) return;
+
+            const confirmacao2 = confirm(
+                "🚨 ÚLTIMA CONFIRMAÇÃO!\n\nDigite 'APAGAR' na caixa abaixo para confirmar a exclusão total dos dados."
+                );
+            if (!confirmacao2) return;
+
+            const digitado = prompt("Digite exatamente a palavra APAGAR (em maiúsculas) para confirmar:");
+            if (digitado !== 'APAGAR') {
+                showToast("Operação cancelada. Os dados estão seguros.", "info");
+                return;
+            }
+
+            // Limpar todo o localStorage relacionado ao app
+            localStorage.removeItem('barber_clientes');
+            localStorage.removeItem('barber_servicos');
+            localStorage.removeItem('barber_barbeiros');
+            localStorage.removeItem('barber_agendamentos');
+            localStorage.removeItem('barber_financeiro');
+            localStorage.removeItem('barber_caixa');
+            localStorage.removeItem('barber_config');
+            localStorage.removeItem('barber_users');
+
+            showToast("Todos os dados foram apagados! O app será reiniciado.", "error");
+
+            setTimeout(() => {
+                sessionStorage.removeItem('barber_logged');
+                window.location.reload();
+            }, 2000);
+        }
+
+        // ==========================================================================
+        // DIALOGS & UTILS
+        // ==========================================================================
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+
+        function populateAgendamentoDropdowns() {
+            let cliOpt = '';
+            BD_CLIENTES.forEach(c => cliOpt += `<option value="${c.id}">${c.nome}</option>`);
+            let srvOpt = '';
+            BD_SERVICOS.forEach(s => srvOpt +=
+                `<option value="${s.id}">${s.nome} (Kz ${s.preco.toLocaleString()})</option>`);
+            let barOpt = '';
+            BD_BARBEIROS.forEach(b => barOpt += `<option value="${b.id}">${b.nome}</option>`);
+
+            document.getElementById('agenda-cliente').innerHTML = cliOpt;
+            document.getElementById('agenda-servico').innerHTML = srvOpt;
+            document.getElementById('agenda-barbeiro').innerHTML = barOpt;
+        }
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let icon = '<i class="fa-solid fa-circle-check"></i>';
+            let color = 'bg-emerald-500 border-emerald-600 text-white';
+
+            if (type === 'error') {
+                icon = '<i class="fa-solid fa-circle-exclamation"></i>';
+                color = 'bg-rose-500 border-rose-600 text-white';
+            }
+            if (type === 'info') {
+                icon = '<i class="fa-solid fa-circle-info"></i>';
+                color = 'bg-blue-500 border-blue-600 text-white';
+            }
+
+            toast.className =
+                `${color} px-4 py-3 border rounded-xl shadow-xl text-xs flex items-center gap-3 font-medium animate-fade-in pointer-events-auto`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 4000);
+        }
+
+        function toggleFinTypeModal(type) {
+            const btnEntrada = document.getElementById('fin-btn-entrada');
+            const btnSaida = document.getElementById('fin-btn-saida');
+            const selectCat = document.getElementById('fin-categoria');
+
+            if (type === 'Entrada') {
+                btnEntrada.className =
+                    "py-2 rounded-xl font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/50";
+                btnSaida.className =
+                    "py-2 rounded-xl font-bold bg-transparent text-gray-400 border border-darkborder";
+                selectCat.innerHTML =
+                    '<option value="Serviços">Serviços</option><option value="Produtos">Venda de Produtos</option><option value="Outros">Outros Ganhos</option>';
+            } else {
+                btnSaida.className =
+                    "py-2 rounded-xl font-bold bg-rose-500/20 text-rose-400 border border-rose-500/50";
+                btnEntrada.className =
+                    "py-2 rounded-xl font-bold bg-transparent text-gray-400 border border-darkborder";
+                selectCat.innerHTML =
+                    '<option value="Água">Água</option><option value="Energia">Energia</option><option value="Internet">Internet</option><option value="Materiais">Materiais</option><option value="Salários">Salários</option><option value="Outros">Outros Gastos</option>';
+            }
+        }
+
+        // ==========================================================================
+        // HANDLERS DE EXCLUSÃO / EDIÇÃO
+        // ==========================================================================
+        function deletarAgendamento(id) {
+            if (confirm("Remover este agendamento?")) { BD_AGENDAMENTOS = BD_AGENDAMENTOS.filter(item => item.id != id);
+                sync(); }
+        }
+
+        function deletarCliente(id) {
+            if (confirm("Remover este cliente permanentemente?")) { BD_CLIENTES = BD_CLIENTES.filter(item => item.id != id);
+                sync(); }
+        }
+
+        function deletarServico(id) {
+            if (confirm("Excluir serviço do menu?")) { BD_SERVICOS = BD_SERVICOS.filter(item => item.id != id);
+                sync(); }
+        }
+
+        function deletarFinanceiro(id) {
+            if (confirm("Excluir lançamento contábil?")) { BD_FINANCEIRO = BD_FINANCEIRO.filter(item => item.id != id);
+                sync(); }
+        }
+
+        function demitirBarbeiro(id) {
+            if (confirm("Remover barbeiro do quadro de funcionários?")) { BD_BARBEIROS = BD_BARBEIROS.filter(item => item
+                    .id != id);
+                sync(); }
+        }
+
+        function editarClienteModal(id) {
+            const c = BD_CLIENTES.find(item => item.id == id);
+            if (c) {
+                document.getElementById('cli-id').value = c.id;
+                document.getElementById('cli-nome').value = c.nome;
+                document.getElementById('cli-telefone').value = c.telefone;
+                document.getElementById('cli-email').value = c.email || '';
+                document.getElementById('cli-nascimento').value = c.nascimento || '';
+                document.getElementById('cli-obs').value = c.obs || '';
+                openModal('modal-cliente');
+            }
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'Agendado':
+                    return 'bg-amber-500/10 text-amber-400';
+                case 'Em andamento':
+                    return 'bg-blue-500/10 text-blue-400';
+                case 'Finalizado':
+                    return 'bg-emerald-500/10 text-emerald-400';
+                case 'Cancelado':
+                    return 'bg-rose-500/10 text-rose-400';
+                default:
+                    return 'bg-gray-500/10 text-gray-400';
+            }
+        }
+
+        // ==========================================================================
+        // EVENTOS (COM AUTENTICAÇÃO COMPLETA + NOVAS FUNCIONALIDADES)
+        // ==========================================================================
+        function setupEventListeners() {
+            // --- Toggle entre login e cadastro ---
+            document.getElementById('show-register').addEventListener('click', () => {
+                document.getElementById('login-form-container').classList.add('hidden');
+                document.getElementById('register-form-container').classList.remove('hidden');
+            });
+            document.getElementById('show-login').addEventListener('click', () => {
+                document.getElementById('register-form-container').classList.add('hidden');
+                document.getElementById('login-form-container').classList.remove('hidden');
+            });
+
+            // --- Registro ---
+            document.getElementById('register-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const user = document.getElementById('reg-user').value.trim();
+                const pass = document.getElementById('reg-pass').value.trim();
+                if (!user || !pass) return showToast('Preencha todos os campos.', 'error');
+                if (BD_USERS.find(u => u.username === user)) {
+                    return showToast('Usuário já existe!', 'error');
+                }
+                BD_USERS.push({ username: user, password: pass });
+                saveUsers();
+                showToast('Conta criada com sucesso! Faça login.', 'success');
+                document.getElementById('register-form-container').classList.add('hidden');
+                document.getElementById('login-form-container').classList.remove('hidden');
+                document.getElementById('login-user').value = user;
+                document.getElementById('login-pass').value = '';
+                document.getElementById('register-form').reset();
+            });
+
+            // --- Login ---
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const user = document.getElementById('login-user').value.trim();
+                const pass = document.getElementById('login-pass').value.trim();
+                const found = BD_USERS.find(u => u.username === user && u.password === pass);
+                if (!found) {
+                    showToast('Usuário ou senha incorretos!', 'error');
+                    return;
+                }
+                sessionStorage.setItem('barber_logged', 'true');
+                showToast(`Bem-vindo, ${user}!`, 'success');
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                document.getElementById('social-float-buttons').style.display = 'flex';
+                switchView('dashboard');
+            });
+
+            // --- Logout ---
+            document.getElementById('btn-logout').addEventListener('click', () => {
+                sessionStorage.removeItem('barber_logged');
+                window.location.reload();
+            });
+
+            // --- Navegação ---
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchView(item.getAttribute('data-view'));
+                });
+            });
+
+            document.getElementById('open-sidebar').addEventListener('click', () => document.getElementById(
+                'sidebar').classList.remove('-translate-x-full'));
+            document.getElementById('close-sidebar').addEventListener('click', () => document.getElementById('sidebar')
+                .classList.add('-translate-x-full'));
+
+            document.getElementById('dark-mode-toggle').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                showToast("Visual adaptado!", "info");
+            });
+
+            // --- Botão Instalar App ---
+            document.getElementById('btn-install-app').addEventListener('click', triggerInstall);
+
+            // --- Botão Apagar Todos os Dados ---
+            document.getElementById('btn-apagar-dados').addEventListener('click', apagarTodosOsDados);
+
+            // --- Formulários de CRUD ---
+            document.getElementById('form-cliente').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('cli-id').value;
+                if (id) {
+                    const idx = BD_CLIENTES.findIndex(c => c.id == id);
+                    if (idx !== -1) {
+                        BD_CLIENTES[idx].nome = document.getElementById('cli-nome').value;
+                        BD_CLIENTES[idx].telefone = document.getElementById('cli-telefone').value;
+                        BD_CLIENTES[idx].email = document.getElementById('cli-email').value;
+                        BD_CLIENTES[idx].nascimento = document.getElementById('cli-nascimento').value;
+                        BD_CLIENTES[idx].obs = document.getElementById('cli-obs').value;
+                    }
+                } else {
+                    BD_CLIENTES.push({
+                        id: Date.now(),
+                        nome: document.getElementById('cli-nome').value,
+                        telefone: document.getElementById('cli-telefone').value,
+                        email: document.getElementById('cli-email').value,
+                        nascimento: document.getElementById('cli-nascimento').value,
+                        obs: document.getElementById('cli-obs').value
+                    });
+                    showToast("Cliente catalogado!");
+                }
+                closeModal('modal-cliente');
+                document.getElementById('form-cliente').reset();
+                document.getElementById('cli-id').value = '';
+                sync();
+            });
+
+            document.getElementById('form-agendamento').addEventListener('submit', (e) => {
+                e.preventDefault();
+                BD_AGENDAMENTOS.push({
+                    id: Date.now(),
+                    clienteId: parseInt(document.getElementById('agenda-cliente').value),
+                    servicoId: parseInt(document.getElementById('agenda-servico').value),
+                    barbeiroId: parseInt(document.getElementById('agenda-barbeiro').value),
+                    data: document.getElementById('agenda-data').value,
+                    hora: document.getElementById('agenda-hora').value,
+                    status: document.getElementById('agenda-status').value
+                });
+                showToast("Agendamento inserido no painel!");
+                closeModal('modal-agendamento');
+                document.getElementById('form-agendamento').reset();
+                sync();
+            });
+
+            document.getElementById('form-servico').addEventListener('submit', (e) => {
+                e.preventDefault();
+                BD_SERVICOS.push({
+                    id: Date.now(),
+                    nome: document.getElementById('srv-nome').value,
+                    preco: parseFloat(document.getElementById('srv-preco').value),
+                    tempo: parseInt(document.getElementById('srv-tempo').value)
+                });
+                showToast("Serviço adicionado ao cardápio!");
+                closeModal('modal-servico');
+                document.getElementById('form-servico').reset();
+                sync();
+            });
+
+            document.getElementById('form-barbeiro').addEventListener('submit', (e) => {
+                e.preventDefault();
+                BD_BARBEIROS.push({
+                    id: Date.now(),
+                    nome: document.getElementById('bar-nome').value,
+                    especialidade: document.getElementById('bar-especialidade').value,
+                    telefone: document.getElementById('bar-telefone').value,
+                    comissao: parseInt(document.getElementById('bar-comissao').value)
+                });
+                showToast("Profissional registrado!");
+                closeModal('modal-barbeiro');
+                document.getElementById('form-barbeiro').reset();
+                sync();
+            });
+
+            document.getElementById('form-financeiro').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const tipoAtivo = document.getElementById('fin-btn-entrada').classList.contains(
+                    'bg-emerald-500/20') ? 'Entrada' : 'Saída';
+                BD_FINANCEIRO.push({
+                    id: Date.now(),
+                    descricao: document.getElementById('fin-descricao').value,
+                    categoria: document.getElementById('fin-categoria').value,
+                    tipo: tipoAtivo,
+                    valor: parseFloat(document.getElementById('fin-valor').value),
+                    data: document.getElementById('fin-data').value
+                });
+                showToast("Lançamento processado com sucesso!");
+                closeModal('modal-financeiro');
+                document.getElementById('form-financeiro').reset();
+                sync();
+            });
+
+            // --- Tipo financeiro ---
+            document.getElementById('fin-btn-entrada').addEventListener('click', () => toggleFinTypeModal('Entrada'));
+            document.getElementById('fin-btn-saida').addEventListener('click', () => toggleFinTypeModal('Saída'));
+            toggleFinTypeModal('Entrada');
+
+            // --- Filtros e buscas ---
+            document.getElementById('agendamento-search').addEventListener('input', renderAgendamentos);
+            document.getElementById('agendamento-filtro-status').addEventListener('change', renderAgendamentos);
+            document.getElementById('cliente-search').addEventListener('input', renderClientes);
+            document.getElementById('fin-filtro-tipo').addEventListener('change', renderFinanceiro);
+
+            // --- Configurações ---
+            document.getElementById('form-configuracoes').addEventListener('submit', (e) => {
+                e.preventDefault();
+                BD_CONFIG.name = document.getElementById('cfg-shop-name').value;
+                BD_CONFIG.phone = document.getElementById('cfg-shop-phone').value;
+                BD_CONFIG.address = document.getElementById('cfg-shop-address').value;
+                showToast("Configurações atualizadas!");
+                applyConfigDOM();
+                sync();
+            });
+
+            // Preencher data atual ao abrir modal financeiro
+            const btnFinanceiroModal = document.querySelector('[onclick*="modal-financeiro"]');
+            if (btnFinanceiroModal) {
+                btnFinanceiroModal.addEventListener('click', () => {
+                    document.getElementById('fin-data').value = new Date().toISOString().split('T')[0];
+                });
+            }
+        }
+    </script>
+</body>
+</html>
